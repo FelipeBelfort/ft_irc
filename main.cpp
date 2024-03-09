@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 	if (argc != 3)
 	{
 		std::cout << "Error: Expected ./ircserv <port> <password>" << std::endl;
-		return EXIT_FAILURE;
+		return 1;
 	}
 	try
 	{
@@ -16,8 +16,8 @@ int main(int argc, char **argv)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
-		return EXIT_FAILURE;
+		return 1;
 	}
 
-	return EXIT_SUCCESS;
+	return 0;
 }

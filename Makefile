@@ -6,7 +6,7 @@ CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD
 
 FILES			=	main
 
-CLASSES			=	
+CLASSES			=	Server
 
 OBJS_DIR		=	objs/
 
