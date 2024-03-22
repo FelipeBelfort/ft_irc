@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 # include <iostream>
+# include <signal.h>
 # include <string>
 # include <sys/socket.h>
 # include <poll.h>
@@ -15,16 +16,18 @@
 class Server
 {
 private:
-	bool		_is_connected;
 	uint16_t	_port;
 	std::string	_password;
+	
 public:
+	static bool	is_connected;
 	Server();
 	~Server();
 
 	void	launchServer(const std::string &port, const std::string &password);
+	// bool	createUser();
 };
 
-
+void	exitServer(int sign);
 
 #endif

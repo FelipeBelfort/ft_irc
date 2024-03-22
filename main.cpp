@@ -9,6 +9,7 @@ int main(int argc, char **argv)
 		std::cout << "Error: Expected ./ircserv <port> <password>" << std::endl;
 		return 1;
 	}
+	// signal(SIGINT, &exitServer);
 	try
 	{
 		server.launchServer(argv[1], argv[2]);

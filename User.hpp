@@ -8,6 +8,7 @@ class User
 private:
 	std::string	_nickname;
 	std::string	_username;
+	int			_fd;
 public:
 	User(std::string nickname, std::string username);
 	~User();
