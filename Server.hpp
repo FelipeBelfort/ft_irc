@@ -8,6 +8,7 @@
 # include <poll.h>
 # include <netinet/in.h>
 # include <algorithm>
+# include <vector>
 
 
 # define MIN_PORT 1023
@@ -18,14 +19,14 @@ class Server
 private:
 	uint16_t	_port;
 	std::string	_password;
-	
+
 public:
 	static bool	is_connected;
 	Server();
 	~Server();
 
 	void	launchServer(const std::string &port, const std::string &password);
-	// bool	createUser();
+	void	createUser(void);
 };
 
 void	exitServer(int sign);

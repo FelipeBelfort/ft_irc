@@ -14,7 +14,6 @@ Server::~Server()
 
 }
 
-// bool	S
 
 void	Server::launchServer(const std::string &port, const std::string &password)
 {
@@ -41,10 +40,14 @@ void	Server::launchServer(const std::string &port, const std::string &password)
 		return;
 	if (listen(server_socket, MAX_CONNECTIONS))
 		return;
-	
-	struct pollfd	sockets[1];
-	sockets[0].fd = server_socket;
-	sockets[0].events = POLLIN;
+
+	pollfd	socket;
+	socket.fd = server_socket;
+	socket.events = POLLIN;
+
+	std::vector<pollfd>	sockets;
+
+	sockets.push_back(socket);
 
 	// std::string	response = "001: Welcome! \r\n";
 
@@ -53,32 +56,47 @@ void	Server::launchServer(const std::string &port, const std::string &password)
 	{
 		signal(SIGINT, &exitServer);
 
-		int ret = poll(sockets, 1, -1);
+		sockets[0].revents = 0;
+		int ret = poll(&sockets[0], sockets.size(), 10);
 		if (ret < 0)
 			break; // error in poll()
 		else if (!ret)
 			continue; // timeout
-		else
+		if (sockets[0].revents & POLLIN)	// TODO => create a new client
+			client_socket = accept(server_socket, NULL, NULL);
+		for (size_t i = 1; i < sockets.size(); i++)
 		{
-			if (sockets[0].revents & POLLIN)	// TODO => if exists should just read else must create a new client
-				client_socket = accept(server_socket, NULL, NULL);
 
 			do {
 				read_ret = recv(client_socket, buff, BUFF_SIZE, 0);
 				buff[read_ret] = 0;
-				std::cout << " sockets => " << sockets[1].fd << " client => " << client_socket << " -> " << buff;
+				std::cout << " sockets => " << sockets[i].fd << " client => " << client_socket << " -> " << buff;
 			}	while (read_ret > 0 && is_connected);
-			std::cout << "\nbla\n";
-			// send(client_socket, response.c_str(), response.size(), 0);
+
+
+			sockets[i].revents = 0;
 		}
+		// else
+		// {
+
+		// 	std::cout << "\nbla\n";
+		// 	// send(client_socket, response.c_str(), response.size(), 0);
+		// }
 	}
-	
+
 	// struct sockaddr_storage	client_addr;
 	// socklen_t	addr_size = sizeof(client_addr);
 
 
-	
+
 	std::cout << "\b\b\nExiting Server..." << std::endl;
+}
+
+void	Server::createUser(void)
+{
+	pollfd	user_socket;
+	user_socket.fd = accept(server_socket, NULL, NULL);
+	user_socket.events = POLLIN | POLLOUT;
 }
 
 void	exitServer(int sign)
