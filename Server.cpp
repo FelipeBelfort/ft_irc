@@ -110,6 +110,12 @@ void	Server::launchServer(const std::string &port, const std::string &password)
 					test += " -> ";
 					test += buff;
 				// }	while (read_ret > 0 && is_connected);
+				if (!read_ret)
+				{
+					std::cout << "client => " << this->_sockets[i].fd << " closed" << std::endl;
+					close(this->_sockets[i].fd);
+					this->_sockets.erase(this->_sockets.begin() + i);
+				}
 
 			}
 			if (this->_sockets[i].revents & POLLOUT)
@@ -117,10 +123,17 @@ void	Server::launchServer(const std::string &port, const std::string &password)
 					send(this->_sockets[i].fd, test.c_str(), test.size(), MSG_DONTWAIT);
 
 			if (this->_sockets[i].revents & POLLERR)
+			{
 				std::cout << "client => " << this->_sockets[i].fd << " POLLERR" << std::endl;
+				close(this->_sockets[i].fd);
+				this->_sockets.erase(this->_sockets.begin() + i);
+			}
 			if (this->_sockets[i].revents & POLLHUP)
+			{
 				std::cout << "client => " << this->_sockets[i].fd << " POLLHUP" << std::endl;
-				
+				close(this->_sockets[i].fd);
+				this->_sockets.erase(this->_sockets.begin() + i);
+			}	
 				// std::cout << " client => " << this->_sockets[i].fd << " ready to POLLOUT " ;
 
 

@@ -13,6 +13,7 @@
 # include <algorithm>
 # include <vector>
 # include <map>
+# include <list>
 // # include "User.hpp"
 // # include "Channel.hpp"
 
@@ -25,6 +26,7 @@ private:
 	uint16_t				_port;
 	std::string				_password;
 	std::vector<pollfd>		_sockets;
+	// std::list<pollfd>		_sockets;
 	// std::map<int, User*>	_clients;
 	// std::map<std::string, Channel*> _channels;
 
