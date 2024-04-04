@@ -6,8 +6,8 @@
 class User
 {
 private:
-	// std::string	_nickname;
-	// std::string	_username;
+	std::string	_nickname;
+	std::string	_username;
 	// int			_fd;
 	// bool		_is_logged;
 	std::string	_msg;
@@ -19,6 +19,8 @@ public:
 	void	getMessage(std::string &msg);
 	// void	joinChannel(std::string channel);
 	std::string	sendMessage(); // std::string msg, std::string channel);
+
+	const std::string	getNick(void);
 };
 
 #endif

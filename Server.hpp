@@ -19,6 +19,8 @@
 
 # define MIN_PORT 1023
 # define MAX_PORT 65535
+# define BUFF_SIZE 42
+# define MAX_CONNECTIONS 20
 
 class User;
 
@@ -34,6 +36,8 @@ private:
 	static bool	initServer(const std::string &port, const std::string &password);
 	static void	createUser(void);
 	static void	closeClient(int i);
+	static bool isValidNick(const std::string &nick);
+	static bool isUniqueNick(const std::string &nick);
 
 public:
 	static bool	is_connected;
