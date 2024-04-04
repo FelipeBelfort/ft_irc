@@ -6,15 +6,19 @@
 class User
 {
 private:
-	std::string	_nickname;
-	std::string	_username;
-	int			_fd;
-public:
-	User(std::string nickname, std::string username);
-	~User();
+	// std::string	_nickname;
+	// std::string	_username;
+	// int			_fd;
+	// bool		_is_logged;
+	std::string	_msg;
 
-	void	joinChannel(std::string channel);
-	void	sendMessage(std::string message, std::string channel);
+public:
+	User(int fd);
+	~User(void);
+
+	void	getMessage(std::string &msg);
+	// void	joinChannel(std::string channel);
+	std::string	sendMessage(); // std::string msg, std::string channel);
 };
 
 #endif

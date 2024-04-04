@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-	Server	server;
+	// Server	server;
 
 	if (argc != 3)
 	{
@@ -12,7 +12,8 @@ int main(int argc, char **argv)
 	// signal(SIGINT, &exitServer);
 	try
 	{
-		server.launchServer(argv[1], argv[2]);
+		// server.launchServer(argv[1], argv[2]);
+		Server::launchServer(argv[1], argv[2]);
 	}
 	catch(const std::exception& e)
 	{
