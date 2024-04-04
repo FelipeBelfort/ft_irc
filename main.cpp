@@ -1,25 +1,32 @@
-#include "Server.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/04 20:43:46 by TheTerror         #+#    #+#             */
+/*   Updated: 2024/04/04 21:04:37 by TheTerror        ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-int main(int argc, char **argv)
+#include <iostream>
+#include <netdb.h>
+
+
+int main(void)
 {
-	// Server	server;
-
-	if (argc != 3)
+	struct protoent*	p = NULL;
+	p = getprotobyname("ip");
+	if (p)
 	{
-		std::cout << "Error: Expected ./ircserv <port> <password>" << std::endl;
-		return 1;
+		std::cout << "name: " << p->p_name \
+		<< "\nprotocol number: " << p->p_proto << std::endl;
+		std::cout << "other names:" << std::endl;
+		for (size_t i = 0; p->p_aliases[i]; i++)
+		{
+			std::cout << "* " << p->p_aliases[i] << std::endl;
+		}
 	}
-	// signal(SIGINT, &exitServer);
-	try
-	{
-		// server.launchServer(argv[1], argv[2]);
-		Server::launchServer(argv[1], argv[2]);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-		return 1;
-	}
-
 	return 0;
 }

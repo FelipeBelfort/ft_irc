@@ -6,7 +6,7 @@ CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD
 
 FILES			=	main
 
-CLASSES			=	Server User
+CLASSES			=	
 
 OBJS_DIR		=	objs/
 
@@ -35,6 +35,8 @@ $(NAME)			: $(OBJS_DIR) $(OBJ) Makefile
 
 $(OBJS_DIR)		:
 			mkdir -p $(OBJS_DIR) #$(DEPS_DIR)
+
+C 				: all clean
 
 clean			:
 			$(RM) $(OBJS_DIR) #$(DEPS_DIR)
