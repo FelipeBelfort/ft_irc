@@ -6,7 +6,7 @@
 /*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 20:43:46 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/07 18:40:44 by TheTerror        ###   ########lyon.fr   */
+/*   Updated: 2024/04/07 20:35:32 by TheTerror        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,18 @@
 #include <netdb.h>
 #include "./libftpp/Libftpp.hpp"
 
+#define	LISTEN_BACKLOG 20
+#define	BUFF_SIZE 500
+
 int main(int argc, char *argv[])
 {
-	int					fdbk, sfd;
+	int					fdbk;
+	int					sfd, cfd;
 	struct addrinfo		hints;
 	struct addrinfo		*result, *rp;
+	struct sockaddr_in	peer_addr;
+	socklen_t			peer_addrlen, tmp_peer_addrlen;
+	char				msg[BUFF_SIZE] = "";
 
 	if (argc != 2)
 		return (Libftpp::error((std::string) argv[0] + " <port>"));
@@ -54,6 +61,27 @@ int main(int argc, char *argv[])
 	freeaddrinfo(result);
 	if (!rp)
 		return (Libftpp::error("could not bind"));
+	cfd = -111;
+	memset(&peer_addr, 0, sizeof(peer_addr));
+	peer_addrlen = sizeof(peer_addr);
+	tmp_peer_addrlen = peer_addrlen;
+	while (1)
+	{
+		// std::cout << "listen!" << std::endl;
+		if (listen(sfd, LISTEN_BACKLOG) < 0)
+			return (Libftpp::error(""), perror("listen()"), 1);
+		// std::cout << "accept a pending connection!" << std::endl;
+		cfd = accept(sfd, (sockaddr*) &peer_addr, &peer_addrlen);
+		if (cfd < 0)
+			return (Libftpp::error(""), perror("accept()"), 1);
+		if (peer_addrlen > tmp_peer_addrlen)
+			return (Libftpp::error("accept(): warning!!! address was truncated"), 1);
+		std::cout << "connection established!" << std::endl;
+		if (read(cfd, &msg, BUFF_SIZE) < 0)
+			return (Libftpp::error(""), perror("read()"), 1);
+		std::cout << "message: '" << msg << "'" << std::endl;
+		break;
+	}
 	close(sfd);
 	return (0);
 }
