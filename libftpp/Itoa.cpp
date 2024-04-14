@@ -1,37 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Itoa.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/11 20:26:46 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/11 20:26:47 by TheTerror        ###   ########lyon.fr   */
+/*   Created: 2024/02/23 16:18:31 by TheTerror         #+#    #+#             */
+/*   Updated: 2024/02/23 17:57:13 by TheTerror        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "Libftpp.hpp"
 
-int main(int argc, char **argv)
+std::string		Libftpp::itoa(const size_t& n)
 {
-	// Server	server;
+	std::string		str;
+	size_t			div;
+	size_t			mod;
 
-	if (argc != 3)
+	if (!n)
+		return ("0");
+	for (mod = n, div = n; div; )
 	{
-		std::cout << "Error: Expected ./ircserv <port> <password>" << std::endl;
-		return 1;
+		mod = div % 10;
+		div /= 10;
+		if (str.empty())
+			str.assign(1, mod + 48);
+		else
+			str.insert(0, 1, mod + 48);
 	}
-	// signal(SIGINT, &exitServer);
-	try
-	{
-		// server.launchServer(argv[1], argv[2]);
-		Server::launchServer(argv[1], argv[2]);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-		return 1;
-	}
-
-	return 0;
+	return (str);
 }

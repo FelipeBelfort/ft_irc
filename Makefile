@@ -1,4 +1,19 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/04/11 20:26:23 by TheTerror         #+#    #+#              #
+#    Updated: 2024/04/11 20:26:32 by TheTerror        ###   ########lyon.fr    #
+#                                                                              #
+# **************************************************************************** #
+
 NAME			=	ircserv
+
+LIBFT			=	$(LIBFT_PATH)libftpp.a
+LIBFT_PATH		=	./libftpp/
 
 CXX				=	c++
 
@@ -28,15 +43,19 @@ RM				=	rm -fr
 $(OBJS_DIR)%.o	: %.cpp $(HEADER)
 				$(CXX) $(CFLAGS) -c $< -o $@
 
-all				:	$(NAME)
+all				:	make_libft $(NAME)
 
 $(NAME)			: $(OBJS_DIR) $(OBJ) Makefile
-			$(CXX) -o $(NAME) $(OBJ)
+			$(CXX) -o $(NAME) $(OBJ) $(LIBFT)
 
 $(OBJS_DIR)		:
 			mkdir -p $(OBJS_DIR) #$(DEPS_DIR)
 
+make_libft		:
+			make -C $(LIBFT_PATH)
+
 clean			:
+			make fclean -C $(LIBFT_PATH)
 			$(RM) $(OBJS_DIR) #$(DEPS_DIR)
 
 fclean			:	clean

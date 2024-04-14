@@ -1,12 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
+/*   Updated: 2024/04/14 15:05:17 by jm               ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Server.hpp"
 
-
 bool				Server::is_connected = true;
-uint16_t			Server::_port;
+uint16_t			Server::_port = 0;
 std::string			Server::_password;
 std::vector<pollfd>	Server::_sockets;
 std::map<int, User>	Server::_clients;
-
 
 Server::Server()
 {
@@ -25,8 +35,7 @@ Server::~Server()
  * 
  * @param port expected a int between MIN_PORT and MAX_PORT
  * @param password 
- * @return false
- * @return true 
+ * @return boolean
  */
 bool	Server::initServer(const std::string &port, const std::string &password)
 {
@@ -35,30 +44,31 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 	sockaddr_in	server_addr;
 
 
-	if (port.empty() || port.find_first_not_of("0123456789") != std::string::npos) 
-		return false;
+	if (!Libftpp::strIsInt(port)) 
+		return (Libftpp::error("invalid port number '" + port + "'"));
 	p = atof(port.c_str());
 	if (p < MIN_PORT || p > MAX_PORT)
-		return false;
-
+		return (Libftpp::error("invalid port number '" + port + "'" \
+			+ "\nvalid range: " + Libftpp::itoa(MIN_PORT) + " < port " \
+			+ " > " + Libftpp::itoa(MAX_PORT)));
 	_port = p;
 	_password = password;
 
 	server_socket.fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket.fd == -1)
-		return (false); 
+		return (Libftpp::ft_perror("socket()"));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(_port);
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(server_socket.fd, (struct sockaddr *)&server_addr, sizeof(server_addr)))
-		return (close(server_socket.fd), false); // TODO error msg
+		return (close(server_socket.fd), Libftpp::ft_perror("bind()"));
 	if (listen(server_socket.fd, MAX_CONNECTIONS))
-		return (close(server_socket.fd), false);
+		return (close(server_socket.fd), Libftpp::ft_perror("listen()"));
 	server_socket.events = POLLIN;
 
 	_sockets.push_back(server_socket);
-	return true;
+	return (true);
 }
 
 /**
@@ -71,86 +81,81 @@ bool	Server::initServer(const std::string &port, const std::string &password)
  * 
  * @param port  to be used in initServer() 
  * @param password  to be used in initServer()
+ * @return boolean
  */
-void	Server::launchServer(const std::string &port, const std::string &password)
+bool	Server::launchServer(const std::string &port, const std::string &password)
+{
+	int			poll_ret;
+
+	poll_ret = -111;
+	if (!initServer(port, password))
+		return (false);
+	signal(SIGINT, &exitServer);
+	while (is_connected)
+	{
+		_sockets[0].revents = 0;
+		poll_ret = poll(&_sockets[0], _sockets.size(), 10);
+		if (poll_ret < 0)
+			return (Libftpp::ft_perror("poll()"));
+		else if (!poll_ret)
+			continue; // timeout
+		if (_sockets[0].revents & POLLIN)
+			if (!createUser())
+				return (false);
+		if (!loopOnUsers())
+			return (false);
+	}
+	std::cout << "\nExiting Server..." << std::endl; //TODO clean up all because it's static class
+	return (true);
+}
+
+/**
+ * @brief it loops on all sockets created
+ * 		- checking eventual I/O errors flagged by poll,
+ * 		- then eventually reading incoming data by the respective fd
+ * 
+ * @return true 
+ * @return false 
+ */
+bool	Server::loopOnUsers()
 {
 	char		buff[BUFF_SIZE];
 	int			read_ret;
 
-	if (!initServer(port, password))
-		return; // TODO error msg
-	
-
-	std::string	test;
-	signal(SIGINT, &exitServer);
-	while (is_connected)
+	read_ret = -111;
+	for (size_t i = 1; i < _sockets.size(); i++)
 	{
-		test.clear();
-
-		_sockets[0].revents = 0;
-		int ret = poll(&_sockets[0], _sockets.size(), 10);
-		if (ret < 0)
-			break; // error in poll()
-		else if (!ret)
-			continue; // timeout
-		if (_sockets[0].revents & POLLIN)
-			createUser();
-			// client_socket = accept(_sockets[0].fd, NULL, NULL);
-		for (size_t i = 1; i < _sockets.size(); i++)
+		if (_sockets[i].revents & POLLERR) // TODO verify error cases before
+			std::cout << "client => " << _sockets[i].fd << " POLLERR " << std::endl;
+		if (_sockets[i].revents & POLLHUP)
+			std::cout << "client => " << _sockets[i].fd << " POLLHUP " << std::endl;
+		if (_sockets[i].revents & POLLERR || _sockets[i].revents & POLLHUP)
 		{
-			if (_sockets[i].revents & POLLIN)
-			{
-				// do {
-					memset(buff, 0, BUFF_SIZE);
-					read_ret = recv(_sockets[i].fd, buff, BUFF_SIZE, MSG_DONTWAIT);
-					buff[read_ret] = 0;
-					// std::cout << " client => " << _sockets[i].fd << " read_ret => " << read_ret << " -> " << buff;
-					test = " client => ";
-					test += (char)_sockets[i].fd + '0';
-					test += " read_ret => ";
-					test += (char)read_ret + '0';
-					test += " -> ";
-					test += buff;
-					(*_clients.find(_sockets[i].fd)).second.getMessage(test);
-				// }	while (read_ret > 0 && is_connected);
-				if (!read_ret)
-				{
-					std::cout << "client => " << _sockets[i].fd << " closed " << std::endl;
-					_sockets[i].revents = 2;
-				}
-
-			}
-			if (_sockets[i].revents & POLLOUT)
-			{
-				test = (*_clients.find(_sockets[i].fd)).second.sendMessage();
-				if (!test.empty())
-					send(_sockets[i].fd, test.c_str(), test.size(), MSG_DONTWAIT);
-			}
-			if (_sockets[i].revents & POLLERR) // TODO verify error cases before
-			{
-				std::cout << "client => " << _sockets[i].fd << " POLLERR " << std::endl;
-				_sockets[i].revents = 2;
-			}
-			if (_sockets[i].revents & POLLHUP)
-			{
-				std::cout << "client => " << _sockets[i].fd << " POLLHUP " << std::endl;
-				_sockets[i].revents = 2;
-			}
-			if (_sockets[i].revents == 2)
-			{
-				closeClient(i);
-				continue;
-			}
-
-
-			_sockets[i].revents = 0;
+			closeClient(i);
+			continue;
 		}
+		if (_sockets[i].revents & POLLIN)
+		{
+			memset(buff, 0, BUFF_SIZE);
+			read_ret = recv(_sockets[i].fd, buff, BUFF_SIZE, MSG_DONTWAIT);
+			if (read_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+				continue;
+			else if (read_ret < 0)
+				return (Libftpp::ft_perror("recv()"));
+			else if (!read_ret)
+			{
+std::cout << "client => " << _sockets[i].fd << " closed " << std::endl;
+			}
+			buff[read_ret] = 0;
+			if (!_clients.at(_sockets[i].fd).routine(buff))
+				return (false);
+		}
+		// if (_sockets[i].revents & POLLOUT)
+		// {
+		// }
+		_sockets[i].revents = 0;
 	}
-
-
-
-
-	std::cout << "\nExiting Server..." << std::endl; //TODO clean up all because it's static class
+	return (true);
 }
 
 /**
@@ -159,31 +164,35 @@ void	Server::launchServer(const std::string &port, const std::string &password)
  * pollfd from the list. 
  * 
  * @param i the index of the revent in the pollfd list
+ * @return boolean
  */
-void	Server::closeClient(int i)
+bool	Server::closeClient(int i)
 {
 	_clients.erase(_sockets[i].fd);
 	close(_sockets[i].fd);
 	_sockets.erase(_sockets.begin() + i);
+	return (true);
 
 }
 
 /**
  * @brief 
  * Fonction to create a user socket and push it in the list
+ * @return boolean
  * TODO => error management
  * 
  */
-void	Server::createUser(void)
+bool	Server::createUser(void)
 {
 	pollfd	user_socket;
 
 	user_socket.fd = accept(_sockets[0].fd, NULL, NULL);
 	if (user_socket.fd == -1)
-		return; // TODO error msg
+		return (false); // TODO error msg
 	user_socket.events = POLLIN | POLLOUT;
 	_sockets.push_back(user_socket);
-	_clients.insert(std::pair<int, User>(user_socket.fd, User(user_socket.fd)));
+	_clients.insert(std::pair<int, User>(user_socket.fd, User(_sockets.back())));
+	return (true);
 }
 
 /**

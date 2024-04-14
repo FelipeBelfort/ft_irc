@@ -1,37 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Error.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/11 20:26:46 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/11 20:26:47 by TheTerror        ###   ########lyon.fr   */
+/*   Created: 2024/02/26 16:37:17 by TheTerror         #+#    #+#             */
+/*   Updated: 2024/04/11 21:19:52 by TheTerror        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "Libftpp.hpp"
 
-int main(int argc, char **argv)
+bool			Libftpp::error(const std::string& msg)
 {
-	// Server	server;
+	std::cerr << "Error: " << msg << std::endl;
+	return (false);
+}
 
-	if (argc != 3)
-	{
-		std::cout << "Error: Expected ./ircserv <port> <password>" << std::endl;
-		return 1;
-	}
-	// signal(SIGINT, &exitServer);
-	try
-	{
-		// server.launchServer(argv[1], argv[2]);
-		Server::launchServer(argv[1], argv[2]);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-		return 1;
-	}
-
-	return 0;
+bool			Libftpp::ft_perror(const std::string& msg)
+{
+	std::cerr << "Error: ";
+	std::perror(msg.c_str());
+	return (false);
 }

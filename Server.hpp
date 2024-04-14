@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/11 20:26:18 by TheTerror         #+#    #+#             */
+/*   Updated: 2024/04/14 02:16:53 by jm               ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
@@ -7,6 +19,7 @@
 # include <fcntl.h>
 # include <string>
 # include <cstring>
+# include <cerrno>
 # include <sys/socket.h>
 # include <poll.h>
 # include <netinet/in.h>
@@ -15,6 +28,7 @@
 # include <map>
 # include <list>
 # include "User.hpp"
+# include "./libftpp/Libftpp.hpp"
 // # include "Channel.hpp"
 
 # define MIN_PORT 1023
@@ -26,25 +40,28 @@ class User;
 
 class Server
 {
-private:
-	static uint16_t				_port;
-	static std::string				_password;
-	static std::vector<pollfd>		_sockets;
-	// std::list<pollfd>		_sockets;
-	static std::map<int, User>	_clients;
-	// std::map<std::string, Channel*> _channels;
-	static bool	initServer(const std::string &port, const std::string &password);
-	static void	createUser(void);
-	static void	closeClient(int i);
-	static bool isValidNick(const std::string &nick);
-	static bool isUniqueNick(const std::string &nick);
+	private:
+		static uint16_t					_port;
+		static std::vector<pollfd>		_sockets;
+		static std::map<int, User>		_clients;
+		// std::map<std::string, Channel*> _channels;
+		static bool	initServer(const std::string &port, const std::string &password);
+		static bool	createUser(void);
+		static bool	closeClient(int i);
+		static bool isValidNick(const std::string &nick);
+		static bool isUniqueNick(const std::string &nick);
+		static bool	loopOnUsers();
 
-public:
-	static bool	is_connected;
-	Server();
-	~Server();
+	public:
 
-	static void	launchServer(const std::string &port, const std::string &password);
+		Server();
+		~Server();
+
+		static bool						is_connected;
+		static std::string				_password;
+
+
+		static bool	launchServer(const std::string &port, const std::string &password);
 };
 
 void	exitServer(int sign);

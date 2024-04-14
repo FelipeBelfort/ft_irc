@@ -1,0 +1,2 @@
+Internet Relay Chat Protocol memo: https://datatracker.ietf.org/doc/html/rfc1459.html#page-13
+https://sites.uclouvain.be/SystInfo/usr/include/bits/poll.h.html

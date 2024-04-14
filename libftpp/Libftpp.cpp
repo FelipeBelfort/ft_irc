@@ -1,37 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Libftpp.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/11 20:26:46 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/11 20:26:47 by TheTerror        ###   ########lyon.fr   */
+/*   Created: 2024/02/23 16:40:24 by TheTerror         #+#    #+#             */
+/*   Updated: 2024/02/23 17:18:58 by TheTerror        ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "Libftpp.hpp"
 
-int main(int argc, char **argv)
+/*private default constructor*/
+Libftpp::Libftpp()
 {
-	// Server	server;
+}
 
-	if (argc != 3)
-	{
-		std::cout << "Error: Expected ./ircserv <port> <password>" << std::endl;
-		return 1;
-	}
-	// signal(SIGINT, &exitServer);
-	try
-	{
-		// server.launchServer(argv[1], argv[2]);
-		Server::launchServer(argv[1], argv[2]);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-		return 1;
-	}
+/*copy constructor*/
+Libftpp::Libftpp(const Libftpp& other)
+{
+	*this = other;
+}
 
-	return 0;
+/*assignment operator*/
+Libftpp&	Libftpp::operator= (const Libftpp& other)
+{
+	(void) other;
+	return (*this);
+}
+
+/*destructor*/
+Libftpp::~Libftpp()
+{
 }
