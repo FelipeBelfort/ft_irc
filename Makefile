@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+         #
+#    By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 20:26:23 by TheTerror         #+#    #+#              #
-#    Updated: 2024/04/11 20:26:32 by TheTerror        ###   ########lyon.fr    #
+#    Updated: 2024/04/18 18:15:45 by jm               ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,15 +19,16 @@ CXX				=	c++
 
 CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD
 
-FILES			=	main
+FILES			=	main UserRegistration
 
+INCLUDE			=	Include
 CLASSES			=	Server User
 
 OBJS_DIR		=	objs/
 
 # DEPS_DIR		=	deps/
 
-HEADER			=	$(CLASSES:=.hpp)
+HEADER			=	$(CLASSES:=.hpp) $(INCLUDE:=.h)
 
 SRC				=	$(FILES:=.cpp) $(CLASSES:=.cpp)
 

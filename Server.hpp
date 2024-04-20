@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:18 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/14 02:16:53 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/20 16:58:40 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <cstring>
 # include <cerrno>
 # include <sys/socket.h>
+# include <netdb.h>
 # include <poll.h>
 # include <netinet/in.h>
 # include <algorithm>
@@ -48,8 +49,6 @@ class Server
 		static bool	initServer(const std::string &port, const std::string &password);
 		static bool	createUser(void);
 		static bool	closeClient(int i);
-		static bool isValidNick(const std::string &nick);
-		static bool isUniqueNick(const std::string &nick);
 		static bool	loopOnUsers();
 
 	public:
@@ -58,10 +57,15 @@ class Server
 		~Server();
 
 		static bool						is_connected;
+		static std::string				sourcename;
 		static std::string				_password;
+		static std::string				broadcastMsg;
 
 
 		static bool	launchServer(const std::string &port, const std::string &password);
+		static bool isUniqueNick(const std::string &nick);
+		static bool isValidNick(const std::string &nick);
+		static bool broadcasting(void);
 };
 
 void	exitServer(int sign);

@@ -3,14 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   StrTools.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 20:12:50 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/02/25 19:25:52 by TheTerror        ###   ########lyon.fr   */
+/*   Updated: 2024/04/14 17:56:34 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Libftpp.hpp"
+
+/**
+ * @brief it splits the 'src' param by refering 
+ * 		to the set of delim characters, extracts 
+ * 		the first substring from 'src' and then returns it.
+ * 
+ * @param src the given string
+ * @param set the set of delim charaters
+ * @return std::string 
+ */
+std::string		Libftpp::extractStr(std::string& src, const std::string& set)
+{
+	std::string		extracted;
+
+	while (!src.empty() && set.find(src.at(0)) == set.npos)
+	{
+		extracted += src.at(0);
+		src.erase(0, 1);
+	}
+	if (!src.empty() && set.find(src.at(0)) != set.npos)
+	{
+		extracted += src.at(0);
+		src.erase(0, 1);
+	}
+	return (extracted);
+}
 
 std::string&		Libftpp::trimStart(std::string& str, const std::string& set)
 {

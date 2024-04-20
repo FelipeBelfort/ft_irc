@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/14 15:05:17 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/20 16:58:28 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 bool				Server::is_connected = true;
 uint16_t			Server::_port = 0;
 std::string			Server::_password;
+std::string			Server::broadcastMsg;
+std::string			Server::sourcename;
 std::vector<pollfd>	Server::_sockets;
 std::map<int, User>	Server::_clients;
 
@@ -68,6 +70,7 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 	server_socket.events = POLLIN;
 
 	_sockets.push_back(server_socket);
+	sourcename.assign((std::string) HOSTNAME + ":" + port);
 	return (true);
 }
 
@@ -119,11 +122,13 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
  */
 bool	Server::loopOnUsers()
 {
+	int			fdbk;
 	char		buff[BUFF_SIZE];
 	int			read_ret;
 
+	fdbk = true;
 	read_ret = -111;
-	for (size_t i = 1; i < _sockets.size(); i++)
+	for (size_t i = 1; i < _sockets.size(); )
 	{
 		if (_sockets[i].revents & POLLERR) // TODO verify error cases before
 			std::cout << "client => " << _sockets[i].fd << " POLLERR " << std::endl;
@@ -131,15 +136,19 @@ bool	Server::loopOnUsers()
 			std::cout << "client => " << _sockets[i].fd << " POLLHUP " << std::endl;
 		if (_sockets[i].revents & POLLERR || _sockets[i].revents & POLLHUP)
 		{
-			closeClient(i);
+			if (!closeClient(i))
+				return (false);
 			continue;
 		}
 		if (_sockets[i].revents & POLLIN)
 		{
 			memset(buff, 0, BUFF_SIZE);
-			read_ret = recv(_sockets[i].fd, buff, BUFF_SIZE, MSG_DONTWAIT);
+			read_ret = recv(_sockets[i].fd, buff, BUFF_SIZE - 1, MSG_DONTWAIT);
 			if (read_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+			{
+				i++;
 				continue;
+			}
 			else if (read_ret < 0)
 				return (Libftpp::ft_perror("recv()"));
 			else if (!read_ret)
@@ -147,13 +156,32 @@ bool	Server::loopOnUsers()
 std::cout << "client => " << _sockets[i].fd << " closed " << std::endl;
 			}
 			buff[read_ret] = 0;
-			if (!_clients.at(_sockets[i].fd).routine(buff))
+			fdbk = _clients.at(_sockets[i].fd).routine(buff);
+			if (fdbk == _fatal)
+			{
+				if (!closeClient(i))
+					return (false);
+std::cout << "user deleted"<< std::endl;
+				continue;
+			}
+			else if (!fdbk)
 				return (false);
 		}
-		// if (_sockets[i].revents & POLLOUT)
-		// {
-		// }
+		if (_sockets[i].revents & POLLOUT)
+		{
+			fdbk = _clients.at(_sockets[i].fd).routine("");
+			if (fdbk == _fatal)
+			{
+				if (!closeClient(i))
+					return (false);
+std::cout << "user deleted"<< std::endl;
+				continue;
+			}
+			else if (!fdbk)
+				return (false);
+		}
 		_sockets[i].revents = 0;
+		i++;
 	}
 	return (true);
 }
@@ -169,7 +197,8 @@ std::cout << "client => " << _sockets[i].fd << " closed " << std::endl;
 bool	Server::closeClient(int i)
 {
 	_clients.erase(_sockets[i].fd);
-	close(_sockets[i].fd);
+	if (close(_sockets[i].fd) < 0)
+		return (Libftpp::ft_perror("close()"));
 	_sockets.erase(_sockets.begin() + i);
 	return (true);
 
@@ -209,8 +238,15 @@ bool	Server::createUser(void)
  */
 bool	Server::isValidNick(const std::string &nick)
 {
+	int		fdbk;
+
+	fdbk = true;
+	if (nick.empty())
+		return (false);
+	fdbk = nick.find_first_of(" ,*?!@.") == std::string::npos && nick.find_first_of("#$:") != 0;
+	fdbk &= !std::isdigit(nick[0]);
 	// TODO add rule They MUST NOT start with a character listed as a channel type, channel membership prefix, or prefix listed in the IRCv3 multi-prefix Extension.
-	return (nick.find_first_of(" ,*?!@.") == std::string::npos && nick.find_first_of("$:") != 0); 
+	return (fdbk);
 }
 
 /**
@@ -224,26 +260,29 @@ bool	Server::isValidNick(const std::string &nick)
  */
 bool	Server::isUniqueNick(const std::string &nick)
 {
-	for (std::map<int, User>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	for (std::map<int, User>::iterator it = _clients.begin(); \
+			it != _clients.end(); it++)
 	{
-		if ((*it).second.getNick() == nick)
-			return false;
-		// look if need to check this
-		// if (!(*it).second.getNick().empty() && nick.size() == (*it).second.getNick().size())
-		// {
-		// 	size_t	i = -1;
-		// 	while (++i <= nick.size())
-		// 	{
-		// 		if (std::toupper(nick[i]) != std::toupper((*it).second.getNick()[i]))
-		// 			break;
-		// 		if (i == nick.size())
-		// 			return false;
-		// 	} 
-		// }
+		if ((*it).second.getNickname() == Libftpp::strToLower(nick))
+			return (false);
 	}
-	return true;
+	return (true);
 }
 
+bool	Server::broadcasting(void)
+{
+	for (std::map<int, User>::iterator it = _clients.begin(); \
+			it != _clients.end(); it++)
+	{
+		if ((*it).second.isRegistered())
+		{
+			(*it).second.insertOutMessage(broadcastMsg);
+		}
+	}
+	broadcastMsg.clear();
+// std::cout << "**************************broadcasted!" << std::endl;
+	return true;
+}
 
 /**
  * @brief 
