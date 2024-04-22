@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/20 16:58:28 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/21 17:22:21 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ uint16_t			Server::_port = 0;
 std::string			Server::_password;
 std::string			Server::broadcastMsg;
 std::string			Server::sourcename;
+std::string			Server::_startDate;
 std::vector<pollfd>	Server::_sockets;
 std::map<int, User>	Server::_clients;
 
@@ -42,10 +43,13 @@ Server::~Server()
 bool	Server::initServer(const std::string &port, const std::string &password)
 {
 	float		p;
+	int			option;
 	pollfd		server_socket;
 	sockaddr_in	server_addr;
+	time_t		tm;
 
 
+	option = 1;
 	if (!Libftpp::strIsInt(port)) 
 		return (Libftpp::error("invalid port number '" + port + "'"));
 	p = atof(port.c_str());
@@ -55,10 +59,12 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 			+ " > " + Libftpp::itoa(MAX_PORT)));
 	_port = p;
 	_password = password;
-
 	server_socket.fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket.fd == -1)
 		return (Libftpp::ft_perror("socket()"));
+	if (setsockopt(server_socket.fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, \
+	&option, sizeof(option)) < 0)
+		return (Libftpp::ft_perror("setsockopt()"));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(_port);
 	server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -68,7 +74,9 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 	if (listen(server_socket.fd, MAX_CONNECTIONS))
 		return (close(server_socket.fd), Libftpp::ft_perror("listen()"));
 	server_socket.events = POLLIN;
-
+	tm = std::time(NULL);
+	_startDate.assign(std::asctime(std::localtime(&tm)));
+	Libftpp::trim(_startDate, " \n");
 	_sockets.push_back(server_socket);
 	sourcename.assign((std::string) HOSTNAME + ":" + port);
 	return (true);
@@ -156,7 +164,7 @@ bool	Server::loopOnUsers()
 std::cout << "client => " << _sockets[i].fd << " closed " << std::endl;
 			}
 			buff[read_ret] = 0;
-			fdbk = _clients.at(_sockets[i].fd).routine(buff);
+			fdbk = _clients.at(_sockets[i].fd).routine(buff, i);
 			if (fdbk == _fatal)
 			{
 				if (!closeClient(i))
@@ -169,7 +177,7 @@ std::cout << "user deleted"<< std::endl;
 		}
 		if (_sockets[i].revents & POLLOUT)
 		{
-			fdbk = _clients.at(_sockets[i].fd).routine("");
+			fdbk = _clients.at(_sockets[i].fd).routine("", i);
 			if (fdbk == _fatal)
 			{
 				if (!closeClient(i))
@@ -209,7 +217,6 @@ bool	Server::closeClient(int i)
  * Fonction to create a user socket and push it in the list
  * @return boolean
  * TODO => error management
- * 
  */
 bool	Server::createUser(void)
 {
@@ -220,7 +227,7 @@ bool	Server::createUser(void)
 		return (false); // TODO error msg
 	user_socket.events = POLLIN | POLLOUT;
 	_sockets.push_back(user_socket);
-	_clients.insert(std::pair<int, User>(user_socket.fd, User(_sockets.back())));
+	_clients.insert(std::pair<int, User>(user_socket.fd, User()));
 	return (true);
 }
 
@@ -269,6 +276,13 @@ bool	Server::isUniqueNick(const std::string &nick)
 	return (true);
 }
 
+/**
+ * @brief appends a message that is intended to the several users
+ * 		at the end of their respective output buffers
+ * 
+ * @return true 
+ * @return false 
+ */
 bool	Server::broadcasting(void)
 {
 	for (std::map<int, User>::iterator it = _clients.begin(); \

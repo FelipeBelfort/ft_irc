@@ -3,15 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   Itoa.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: TheTerror <jfaye@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 16:18:31 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/02/23 17:57:13 by TheTerror        ###   ########lyon.fr   */
+/*   Updated: 2024/04/21 20:27:11 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Libftpp.hpp"
 
+/**
+ * @brief Converts an integer value to a null-terminated string
+ * 
+ * @param n 
+ * @return (std::string) string representation of 'n'
+ */
 std::string		Libftpp::itoa(const size_t& n)
 {
 	std::string		str;

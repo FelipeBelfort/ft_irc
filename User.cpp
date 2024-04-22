@@ -6,19 +6,20 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:43 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/20 16:58:30 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/22 20:28:34 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "User.hpp"
 
-User::User(pollfd &user_socket) : _user_socket(&user_socket), _fd(user_socket.fd), _registered(false)
+User::User() : _registered(false)
 {
 	this->_map["CAP"] = &User::capCommand;
 	this->_map["PASS"] = &User::authenticate;
 	this->_map["NICK"] = &User::nickCommand;
 	this->_map["USER"] = &User::userCommand;
 	this->_map["QUIT"] = &User::quitCommand;
+	this->_map["LUSERS"] = &User::lusersCommand;
 }
 
 User::~User(void)
@@ -27,14 +28,14 @@ User::~User(void)
 /**
  * @brief it always firstly concatenates the old buffers 
  * 		contents stuck in 'inmsg' with the new buffer content.
- * 		Then launch the parsing and then send eventual message
+ * 		Then launch the parsing and then send eventual messages
  * 		wrote in 'outmsg' to the remote.
  * 
  * @param buff : buffer filled on the reading step
  * @return true 
  * @return false 
  */
-int		User::routine(std::string buff)
+int		User::routine(std::string buff, size_t index)
 {
 	int		fdbk;
 
@@ -53,19 +54,19 @@ std::cout << "inmsg: \"" + this->_inmsg << "\"" << std::endl;
 	
 	if (!Server::broadcastMsg.empty())
 		Server::broadcasting();
-	if (!this->_outmsg.empty() && (this->_user_socket->revents & POLLOUT))
+	if (!this->_outmsg.empty() && (Server::getSockrevents(index) & POLLOUT))
 	{
-		fdbk &= transmitMessage();
+		fdbk &= transmitMessage(index);
 	}
 	return (fdbk);
 }
 
-int	User::transmitMessage()
+int	User::transmitMessage(const size_t& index)
 {
 	int		send_ret;
 
 // std::cout << "before-----------" << this->_fd << "-------------- " << this->_user_socket->fd << std::endl;
-	send_ret = send(this->_user_socket->fd, this->_outmsg.c_str(), \
+	send_ret = send(Server::getSockfd(index), this->_outmsg.c_str(), \
 		this->_outmsg.size(), MSG_DONTWAIT);
 	if (send_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 		return (Libftpp::error("send() would block"));
@@ -91,6 +92,109 @@ int	User::quitCommand()
 	this->_outmsg += ErrorCommand(" ");
 std::cout << this->_nickname << " quitted!" << std::endl;
 	return (_fatal);
+}
+
+int	User::lusersCommand()
+{
+	if (!this->_registered)
+		return (_ignore);
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LUSERCLIENT, \
+		this->_nickname, "There are <u> users and <i> invisible on <s> servers");
+	return (true);
+}
+
+int		User::lusers_rpl_numerics(void)
+{
+	size_t			n, m;
+	std::string		msg;
+
+	n = 0;
+	m = 0;
+	msg = "There are " + Libftpp::itoa(Server::getNbOfUsers()) + \
+		" users and " + Libftpp::itoa(Server::getNbOfInvUsers()) + \
+		" invisible on " + Libftpp::itoa(Server::getNbOfOtherServs()) + \
+		" servers";
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LUSERCLIENT, \
+		this->_nickname, msg);
+	n = Server::getNbOfOperators();
+	if (n < 2)
+		msg = "operator online";
+	else
+		msg = "operators online";
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LUSEROP, \
+		this->_nickname + " " + Libftpp::itoa(n), msg);
+	n = Server::getNbOfUnkConnect();
+	if (n < 2)
+		msg = "unknown connection";
+	else
+		msg = "unknown connections";
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LUSERUNKNOWN, \
+		this->_nickname + " " + Libftpp::itoa(n), msg);
+	n = Server::getNbOfChannels();
+	if (n < 2)
+		msg = "channel formed";
+	else
+		msg = "channels formed";
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LUSERCHANNELS, \
+		this->_nickname + " " + Libftpp::itoa(n), msg);
+	msg = "I have " + Libftpp::itoa(Server::getNbOfUsers()) + \
+		" clients and " + Libftpp::itoa(Server::getNbOfOtherServs()) + \
+		" servers";
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LUSERME, \
+		this->_nickname, msg);
+	n = Server::getNbOfUsers();
+	m = Server::getMaxOfUsers();
+	msg = "Current local users " + Libftpp::itoa(n) + ", max " \
+		+ Libftpp::itoa(m);
+	this->_outmsg += numericMessage(HOSTNAME, RPL_LOCALUSERS, \
+		this->_nickname + " " + Libftpp::itoa(n) + " " + Libftpp::itoa(m), \
+		msg);
+	n = Server::getNbOfUsers();
+	m = Server::getMaxOfUsers();
+	msg = "Current global users " + Libftpp::itoa(n) + ", max " \
+		+ Libftpp::itoa(m);
+	this->_outmsg += numericMessage(HOSTNAME, RPL_GLOBALUSERS, \
+		this->_nickname + " " + Libftpp::itoa(n) + " " + Libftpp::itoa(m), \
+		msg);
+	return (true);
+}
+
+int		User::motd_rpl_numerics(void)
+{
+	std::string		filename;
+
+	filename = Server::getMsgOfTheDay();
+	if (filename.empty())
+		this->_outmsg += numericMessage(HOSTNAME, ERR_NOMOTD, \
+			this->_nickname, "MOTD File is missing");
+	else
+	{
+		std::string		line;
+		std::string		motd;
+		std::ifstream	is;
+
+		try
+		{
+			is.exceptions(std::ios_base::badbit | std::ios_base::failbit);
+			is.open(filename.c_str(), std::ios_base::in);
+			is.exceptions(std::ios_base::goodbit);
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << "Error: On openning of MOTD's file:" << e.what() << '\n';
+			return (false);
+		}
+		while (is)
+		{
+			line.clear();
+			std::getline(is, line);
+			if (!line.empty())
+				motd += line;
+		}
+		this->_outmsg += numericMessage(HOSTNAME, ERR_NOMOTD, \
+			this->_nickname, motd);
+	}
+	return (true);
 }
 
 int	User::parse()
@@ -142,29 +246,6 @@ int	User::parse()
 		// Libftpp::trimStart(this->_inmsg, " \t\r\n");
 	}
 	return (true);
-}
-
-void	User::getMessage(std::string &msg)
-{
-	this->_inmsg += msg;
-}
-
-const std::string&	User::getNickname(void) const
-{
-	return (this->_nickname);
-}
-const std::string&	User::getOutMsg(void) const
-{
-	return (this->_outmsg);
-}
-bool				User::isRegistered(void) const
-{
-	return (this->_registered);
-}
-
-void				User::insertOutMessage(const std::string& msg)
-{
-	this->_outmsg += msg;
 }
 
 std::string		User::serverMessage(std::string src, \

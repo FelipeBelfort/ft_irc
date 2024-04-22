@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 20:12:50 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/14 17:56:34 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/21 20:24:49 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
  * 
  * @param src the given string
  * @param set the set of delim charaters
- * @return std::string 
+ * @return (std::string) the first substr extracted
  */
 std::string		Libftpp::extractStr(std::string& src, const std::string& set)
 {
@@ -38,6 +38,13 @@ std::string		Libftpp::extractStr(std::string& src, const std::string& set)
 	return (extracted);
 }
 
+/**
+ * @brief removes the given characters in 'set' from the beginning of 'str'
+ * 
+ * @param str
+ * @param set
+ * @return std::string& 
+ */
 std::string&		Libftpp::trimStart(std::string& str, const std::string& set)
 {
 	while (!str.empty() && set.find(str.at(0)) != std::string::npos)
@@ -47,6 +54,15 @@ std::string&		Libftpp::trimStart(std::string& str, const std::string& set)
 	return (str);
 }
 
+/**
+ * @brief removes at most 'nb' characters specified in 'set' 
+ * 		from the beginning of 'str'
+ * 
+ * @param str 
+ * @param set 
+ * @param nb 
+ * @return std::string& 
+ */
 std::string&		Libftpp::trimStart(std::string& str, const std::string& set, const size_t& nb)
 {
 	size_t	n;
@@ -60,6 +76,13 @@ std::string&		Libftpp::trimStart(std::string& str, const std::string& set, const
 	return (str);
 }
 
+/**
+ * @brief removes the given characters in 'set' from the end of 'str'
+ * 
+ * @param str 
+ * @param set 
+ * @return std::string& 
+ */
 std::string&		Libftpp::trimEnd(std::string& str, const std::string& set)
 {
 	while (!str.empty() && set.find(str.at(str.size() - 1)) != std::string::npos)
@@ -69,6 +92,15 @@ std::string&		Libftpp::trimEnd(std::string& str, const std::string& set)
 	return (str);
 }
 
+/**
+ * @brief removes at most 'nb' characters specified in 'set' 
+ * 		from the end of 'str'
+ * 
+ * @param str 
+ * @param set 
+ * @param nb 
+ * @return std::string& 
+ */
 std::string&		Libftpp::trimEnd(std::string& str, const std::string& set, const size_t& nb)
 {
 	size_t	n;
@@ -82,6 +114,14 @@ std::string&		Libftpp::trimEnd(std::string& str, const std::string& set, const s
 	return (str);
 }
 
+/**
+ * @brief removes the given characters in 'set' from the beginning 
+ * 		and the end of 'str'
+ * 
+ * @param str 
+ * @param set 
+ * @return std::string& 
+ */
 std::string&		Libftpp::trim(std::string& str, const std::string& set)
 {
 	str = Libftpp::trimStart(str, set);
@@ -89,6 +129,15 @@ std::string&		Libftpp::trim(std::string& str, const std::string& set)
 	return (str);
 }
 
+/**
+ * @brief removes at most 'nb' characters specified in 'set' 
+ * 		from the beginning and the end of 'str'
+ * 
+ * @param str 
+ * @param set 
+ * @param nb 
+ * @return std::string& 
+ */
 std::string&		Libftpp::trim(std::string& str, const std::string& set, const size_t& nb)
 {
 	str = Libftpp::trimStart(str, set, nb);
@@ -96,6 +145,13 @@ std::string&		Libftpp::trim(std::string& str, const std::string& set, const size
 	return (str);
 }
 
+/**
+ * @brief removes the given characters in 'set' from the string 'str' 
+ * 
+ * @param str 
+ * @param set 
+ * @return std::string& 
+ */
 std::string&		Libftpp::removeChars(std::string& str, const std::string& set)
 {
 	for (size_t i = 0; !str.empty() && i < str.size(); )
@@ -108,6 +164,13 @@ std::string&		Libftpp::removeChars(std::string& str, const std::string& set)
 	return (str);
 }
 
+/**
+ * @brief assert whether the given string holds only whitespaces
+ * 
+ * @param str 
+ * @return true 
+ * @return false 
+ */
 bool				Libftpp::strIsWSpaces(const std::string& str)
 {
 	for (std::string::const_iterator it = str.begin(); \
@@ -119,6 +182,14 @@ bool				Libftpp::strIsWSpaces(const std::string& str)
 	return (true);
 }
 
+/**
+ * @brief assert whether the given string is of type double;
+ * 		a valid base-10 double number representation
+ * 
+ * @param str 
+ * @return true 
+ * @return false 
+ */
 bool				Libftpp::strIsDouble(std::string str)
 {
 	size_t	i;
@@ -159,7 +230,12 @@ bool				Libftpp::strIsDouble(std::string str)
 	return (false);
 }
 
-
+/**
+ * @brief turns the given string to a full lower case string
+ * 
+ * @param str 
+ * @return std::string 
+ */
 std::string			Libftpp::strToLower(std::string str)
 {
 	std::string		lowstr;
@@ -172,6 +248,14 @@ std::string			Libftpp::strToLower(std::string str)
 	return (lowstr);
 }
 
+/**
+ * @brief assert whether the given string is of integer type;
+ * 		a valid base-10 integer number representation
+ * 
+ * @param str 
+ * @return true 
+ * @return false 
+ */
 bool				Libftpp::strIsInt(std::string str)
 {
 	size_t	i;
@@ -189,6 +273,14 @@ bool				Libftpp::strIsInt(std::string str)
 	return (true);
 }
 
+/**
+ * @brief assert whether the given string is of type float;
+ * 		a valid base-10 float number representation
+ * 
+ * @param str 
+ * @return true 
+ * @return false 
+ */
 bool				Libftpp::strIsFloat(std::string str)
 {
 	size_t	i;

@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:29 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/20 16:58:38 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/22 20:12:28 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,24 @@
 
 class User
 {
+	public:
+
+		User();
+		~User(void);
+
+		int		routine(std::string buff, size_t index);
+
+		const std::string&	getNickname(void) const;
+		const std::string&	getOutMsg(void) const;
+		bool				isRegistered(void) const;
+		void				insertOutMessage(const std::string& msg);
+		std::string	serverMessage(std::string src, std::string cmd, \
+			std::string msg);
+		std::string	numericMessage(std::string src, std::string num, \
+			std::string target, std::string msg);
+		std::string	ErrorCommand(std::string msg);
+
 	private:
-		pollfd*		_user_socket;
-int	_fd;
 		std::string	_cap;
 		std::string	_password;
 		std::string	_nickname;
@@ -44,37 +59,23 @@ int	_fd;
 		std::string	_outmsg;
 		std::map<std::string, int (User:: *)(void)>	_map;
 
-	public:
-
-		User(pollfd& user_socket);
-		~User(void);
-
-		std::string	serverMessage(std::string src, std::string cmd, \
-			std::string msg);
-		std::string	numericMessage(std::string src, std::string num, \
-			std::string target, std::string msg);
-		std::string	ErrorCommand(std::string msg);
-		int		routine(std::string buff);
 		int		parse();
 		int		capCommand();
 		int		authenticate();
 		int		nickCommand();
 		int		userCommand();
 		int		quitCommand();
+		int		lusersCommand();
 		int		registrationComplete();
-		int		transmitMessage();
+		int		transmitMessage(const size_t& index);
 		// bool	join();
 		// bool	invite();
 		// bool	topic();
 		// bool	modes();
 		// bool	kick();
-		void	getMessage(std::string& msg);
 		// void	joinChannel(std::string channel);
-
-		const std::string&	getNickname(void) const;
-		const std::string&	getOutMsg(void) const;
-		bool				isRegistered(void) const;
-		void				insertOutMessage(const std::string& msg);
+		int		lusers_rpl_numerics(void);
+		int		motd_rpl_numerics(void);
 };
 
 #endif

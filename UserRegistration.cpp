@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:46:11 by jm                #+#    #+#             */
-/*   Updated: 2024/04/20 16:58:33 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/22 20:24:02 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	User::nickCommand()
 			this->_outmsg += numericMessage(HOSTNAME, ERR_NONICKNAMEGIVEN, \
 				"", "no nickname given");
 			if (this->_registered)
-				return (true);
+				return (true); 
 			return (_fatal);
 		}
 	}
@@ -121,7 +121,8 @@ int	User::nickCommand()
 	this->_oldnickname = this->_nickname;
 	this->_nickname = Libftpp::strToLower(name);
 	if (this->_registered)
-		Server::broadcastMsg += serverMessage(this->_oldnickname, "NICK", \
+		Server::broadcastMsg += serverMessage(this->_oldnickname \
+			+ "!" + this->_username + "@localhost", "NICK", \
 			this->_nickname);
 std::cout << "nickname updated!" << std::endl;
 	if (!this->_username.empty() && !this->_registered)
@@ -189,5 +190,21 @@ int	User::registrationComplete()
 	this->_outmsg += numericMessage(HOSTNAME, RPL_WELCOME, \
 		this->_nickname, "Welcome to the 42IRC Network, " + \
 		this->_nickname + "!"+ this->_username + "@localhost");
+	this->_outmsg += numericMessage(HOSTNAME, RPL_YOURHOST, \
+		this->_nickname, "Your host is " + \
+		Server::sourcename + ", running version 0.0");
+	this->_outmsg += numericMessage(HOSTNAME, RPL_CREATED, \
+		this->_nickname, "This server was created " + \
+		Server::getStartDate());
+	this->_outmsg += numericMessage(HOSTNAME, RPL_MYINFO, \
+		this->_nickname, Server::sourcename + " 0.0" + " rO" + " itkol");
+	this->_outmsg += numericMessage(HOSTNAME, RPL_ISUPPORT, this->_nickname, \
+		(std::string) CASEMAPPING + " " + PREFIX + " " + CHANTYPES + " " \
+		+ MODES + " " + CHANLIMIT + " " + NICKLEN + " " + TOPICLEN + " " \
+		+ KICKLEN + " " + CHANNELLEN + " " + CHANMODES + " " + USERLEN + " " \
+		+ STATUSMSG + " :are supported by this server");
+	lusers_rpl_numerics();
+	if (!motd_rpl_numerics())
+		return (false);
 	return (true);
 }

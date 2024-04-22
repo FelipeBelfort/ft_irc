@@ -6,7 +6,7 @@
 #    By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 20:26:23 by TheTerror         #+#    #+#              #
-#    Updated: 2024/04/18 18:15:45 by jm               ###   ########lyon.fr    #
+#    Updated: 2024/04/22 16:09:16 by jm               ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ CXX				=	c++
 
 CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD
 
-FILES			=	main UserRegistration
+FILES			=	main UserGettersSetters UserRegistration ServerGettersSetters
 
 INCLUDE			=	Include
 CLASSES			=	Server User
