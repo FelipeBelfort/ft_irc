@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 21:59:10 by jm                #+#    #+#             */
-/*   Updated: 2024/05/07 21:30:42 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/10 17:09:26 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <vector>
 # include <set>
 # include <exception>
-# include "User.hpp"
+# include "./../user/User.hpp"
 
 class User;
 

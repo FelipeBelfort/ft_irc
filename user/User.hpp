@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:29 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/08 19:56:58 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/10 17:32:26 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@
 # include <sstream>
 # include <map>
 # include <set>
-# include "Server.hpp"
-# include "libftpp/Libftpp.hpp"
-# include "Channel.hpp"
-# include "Include.h"
+# include "./../server/Server.hpp"
+# include "./../libftpp/Libftpp.hpp"
+# include "./../channel/Channel.hpp"
+# include "./../Include.h"
 
 class User
 {

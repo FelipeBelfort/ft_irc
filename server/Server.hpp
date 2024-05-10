@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:18 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/03 14:43:34 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/10 17:33:02 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@
 # include <vector>
 # include <map>
 # include <list>
-# include "User.hpp"
-# include "./libftpp/Libftpp.hpp"
-# include "Channel.hpp"
+# include "./../user/User.hpp"
+# include "./../libftpp/Libftpp.hpp"
+# include "./../channel/Channel.hpp"
 
 # define MIN_PORT 1023
 # define MAX_PORT 65535

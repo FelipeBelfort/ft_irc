@@ -6,7 +6,7 @@
 #    By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 20:26:23 by TheTerror         #+#    #+#              #
-#    Updated: 2024/04/26 10:40:03 by jm               ###   ########lyon.fr    #
+#    Updated: 2024/05/10 17:44:14 by jm               ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,16 +14,24 @@ NAME			=	ircserv
 
 LIBFT			=	$(LIBFT_PATH)libftpp.a
 LIBFT_PATH		=	./libftpp/
+SERVER_PATH		=	./server/
+USER_PATH		=	./user/
+CHANNEL_PATH	=	./channel/
 
 CXX				=	c++
 
 CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD -g3
 
-FILES			=	main UserGettersSetters UserRegistration ServerGettersSetters \
-					UserCommands ChannelGettersSetters ChannelMember
+SERVER_FILES	=	$(addprefix $(SERVER_PATH), Server ServerGettersSetters)
+USER_FILES		=	$(addprefix $(USER_PATH), User UserGettersSetters UserRegistration \
+					UserCommands)
+CHANNEL_FILES	=	$(addprefix $(CHANNEL_PATH), Channel ChannelGettersSetters \
+					ChannelMember)
+
+FILES			=	main $(SERVER_FILES) $(USER_FILES) $(CHANNEL_FILES)
 
 INCLUDE			=	Include
-CLASSES			=	Server User Channel
+CLASSES			=	$(SERVER_PATH)Server $(USER_PATH)User $(CHANNEL_PATH)Channel
 
 OBJS_DIR		=	objs/
 
@@ -31,7 +39,7 @@ OBJS_DIR		=	objs/
 
 HEADER			=	$(CLASSES:=.hpp) $(INCLUDE:=.h)
 
-SRC				=	$(FILES:=.cpp) $(CLASSES:=.cpp)
+SRC				=	$(FILES:=.cpp)
 
 OBJ				=	$(addprefix $(OBJS_DIR), $(SRC:.cpp=.o))
 
@@ -42,7 +50,7 @@ RM				=	rm -fr
 
 -include $(DEPENDENCIES)
 
-$(OBJS_DIR)%.o	: %.cpp $(HEADER)
+$(OBJS_DIR)%.o	: %.cpp $(HEADER) $(LIBFT)
 				$(CXX) $(CFLAGS) -c $< -o $@
 
 all				:	make_libft $(NAME)
@@ -51,7 +59,10 @@ $(NAME)			: $(OBJS_DIR) $(OBJ) Makefile
 			$(CXX) -o $(NAME) $(OBJ) $(LIBFT)
 
 $(OBJS_DIR)		:
-			mkdir -p $(OBJS_DIR) #$(DEPS_DIR)
+			@mkdir -p $(OBJS_DIR) #$(DEPS_DIR)
+			@mkdir -p $(OBJS_DIR)$(SERVER_PATH)
+			@mkdir -p $(OBJS_DIR)$(USER_PATH)
+			@mkdir -p $(OBJS_DIR)$(CHANNEL_PATH)
 
 make_libft		:
 			make -C $(LIBFT_PATH)

@@ -6,11 +6,11 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:46 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/26 17:54:16 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/10 17:30:04 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "./server/Server.hpp"
 
 int main(int argc, char **argv)
 {
