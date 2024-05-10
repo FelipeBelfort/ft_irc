@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/08 15:55:12 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/10 17:53:06 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,117 +201,6 @@ std::cout << "user deleted"<< std::endl;
 
 /**
  * @brief 
- * If the poll.revents faces a problem this fonction will be called to close the socket and erase both the User and the 
- * pollfd from the list. 
- * 
- * @param i the index of the revent in the pollfd list
- * @return boolean
- */
-bool	Server::closeClient(int i)
-{
-	_users.erase(_sockets[i].fd);
-	if (close(_sockets[i].fd) < 0)
-		return (Libftpp::ft_perror("close()"));
-	_sockets.erase(_sockets.begin() + i);
-	return (true);
-
-}
-
-/**
- * @brief creates a new User instance in users container 
- * 		associated to the socket file descriptor returned by accept().
- * 		This latter is also appended to sockets container.
- * @return true, false
- */
-bool	Server::createUser(void)
-{
-	pollfd	user_socket;
-
-	user_socket.fd = accept(_sockets[0].fd, NULL, NULL);
-	if (user_socket.fd == -1)
-		return (Libftpp::ft_perror("accept()"));
-	user_socket.events = POLLIN | POLLOUT;
-	_sockets.push_back(user_socket);
-	_users.insert(std::pair<int, User>( \
-		user_socket.fd, User(user_socket.fd)));
-	return (true);
-}
-
-/**
- * @brief 
- * Nicknames are non-empty strings with the following restrictions:
- * They MUST NOT contain any of the following characters: space (' ', 0x20), comma (',', 0x2C), asterisk ('*', 0x2A), question mark ('?', 0x3F), exclamation mark ('!', 0x21), at sign ('@', 0x40).
- * They MUST NOT start with any of the following characters: dollar ('$', 0x24), colon (':', 0x3A).
- * They MUST NOT start with a character listed as a channel type, channel membership prefix, or prefix listed in the IRCv3 multi-prefix Extension.
- * They SHOULD NOT contain any dot character ('.', 0x2E).
- * 
- * @param nick 
- * @return true 
- * @return false 
- */
-bool	Server::isValidNick(const std::string &nick)
-{
-	int		fdbk;
-
-	fdbk = true;
-	if (nick.empty())
-		return (false);
-	fdbk = nick.find_first_of(" ,*?!@.#&$:") == std::string::npos && nick.find_first_of("#&$:") != 0;
-	fdbk &= !std::isdigit(nick[0]);
-	// TODO add rule They MUST NOT start with a character listed as a channel type, channel membership prefix, or prefix listed in the IRCv3 multi-prefix Extension.
-	return (fdbk);
-}
-
-/**
- * @brief 
- * Nicknames must be unique in the server
- * 
- * 	TODO verify if is case insensitive and do the same for the channel
- * @param nick 
- * @return true 
- * @return false 
- */
-bool	Server::isUniqueNick(const std::string &nick)
-{
-	for (std::map<int, User>::iterator it = _users.begin(); \
-			it != _users.end(); it++)
-	{
-		if ((*it).second.getNickname() == Libftpp::strToLower(nick))
-			return (false);
-	}
-	return (true);
-}
-
-/**
- * @brief appends a message that is intended to the several users
- * 		at the end of their respective output buffers
- * 
- * @return true 
- * @return false 
- */
-bool	Server::broadcasting(void)
-{
-	for (std::map<int, User>::iterator it = _users.begin(); \
-			it != _users.end(); it++)
-	{
-		if ((*it).second.isRegistered())
-		{
-			(*it).second.insertOutMessage(broadcastMsg);
-		}
-	}
-	broadcastMsg.clear();
-// std::cout << "**************************broadcasted!" << std::endl;
-	return true;
-}
-
-int				Server::removeChannel(const std::string& chann_name)
-{
-	channels.erase(Libftpp::strToLower(chann_name));
-	return (true);
-}
-
-/**
- * @brief 
  * Handle the SIGINT and changes the is_connected state to exit the server
  * 
  * @param sign 
@@ -320,72 +209,4 @@ void	exitServer(int sign)
 {
 	if (sign == SIGINT)
 		Server::is_connected = false;
-}
-
-std::string		Server::serverMessage(std::string src, \
-	std::string cmd)
-{
-	std::string	line;
-
-	if (src.empty())
-		src.assign("*");
-	if (cmd.empty())
-		cmd.assign("*");
-	line = ":" + src + " " + cmd + "\r\n";
-	return (line);
-}
-std::string		Server::serverMessage(std::string src, \
-	std::string cmd, std::string msg)
-{
-	std::string	line;
-
-	if (src.empty())
-		src.assign("*");
-	if (cmd.empty())
-		cmd.assign("*");
-	if (msg.empty())
-		msg.assign("");
-	line = ":" + src + " " + cmd + " :" + msg + "\r\n";
-	return (line);
-}
-std::string		Server::numericMessage(std::string src, \
-	std::string num, std::string target, std::string msg)
-{
-	std::string	line;
-
-	if (src.empty())
-		src.assign("*");
-	if (num.empty())
-		num.assign("*");
-	if (target.empty())
-		target.assign("*");
-	if (msg.empty())
-		msg.assign("");
-	line = ":" + src + " " + num + " " + target + " :" + msg + "\r\n";
-	return (line);
-}
-
-std::string		Server::numericMessage(std::string src, \
-	std::string num, std::string other_params)
-{
-	std::string	line;
-
-	if (src.empty())
-		src.assign("*");
-	if (num.empty())
-		num.assign("*");
-	if (other_params.empty())
-		other_params.assign("*");
-	line = ":" + src + " " + num + " " + other_params + "\r\n";
-	return (line);
-}
-
-std::string		Server::ErrorMessage(std::string msg)
-{
-	std::string	line;
-
-	if (msg.empty())
-		msg.assign(" ");
-	line = "ERROR :" + msg + "\r\n";
-	return (line);
 }

@@ -6,7 +6,7 @@
 #    By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 20:26:23 by TheTerror         #+#    #+#              #
-#    Updated: 2024/05/10 17:44:14 by jm               ###   ########lyon.fr    #
+#    Updated: 2024/05/10 18:33:21 by jm               ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,11 +22,15 @@ CXX				=	c++
 
 CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD -g3
 
-SERVER_FILES	=	$(addprefix $(SERVER_PATH), Server ServerGettersSetters)
+SERVER_FILES	=	$(addprefix $(SERVER_PATH), Server ServerGettersSetters \
+					ServerMessageTools ServerOtherTools)
 USER_FILES		=	$(addprefix $(USER_PATH), User UserGettersSetters UserRegistration \
-					UserCommands)
+					UserJoinCommand UserPrivmsgCommand UserOtherCommands UserKickCommand \
+					UserInviteCommand UserModeCommand UserTopicCommand UserOtherTools)
 CHANNEL_FILES	=	$(addprefix $(CHANNEL_PATH), Channel ChannelGettersSetters \
-					ChannelMember)
+					ChannelJoinCommand ChannelprivmsgCommand ChannelKickCommand \
+					ChannelInviteCommand ChannelModeCommand ChannelTopicCommand \
+					ChannelOtherTools ChannelMember)
 
 FILES			=	main $(SERVER_FILES) $(USER_FILES) $(CHANNEL_FILES)
 
