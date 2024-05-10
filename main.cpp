@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:46 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/14 15:25:30 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/26 17:54:16 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,8 @@ int main(int argc, char **argv)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cerr << e.what() << std::endl;
 		return (1);
 	}
-
 	return (0);
 }

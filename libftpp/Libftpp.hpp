@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 16:38:13 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/14 17:57:41 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/26 16:10:14 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ class Libftpp
 		~Libftpp();
 
 		static std::string		itoa(const size_t& n);
-		static std::string		extractStr(std::string& src, const std::string& set);
+		static std::string		extractStr(std::string& src, const std::string& set, bool preserve_delim);
 		static std::string&		trimStart(std::string& str, const std::string& set);
 		static std::string&		trimStart(std::string& str, const std::string& set, const size_t& nb);
 		static std::string&		trimEnd(std::string& str, const std::string& set);

@@ -6,11 +6,67 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 17:06:07 by jm                #+#    #+#             */
-/*   Updated: 2024/04/22 20:28:06 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/09 23:29:08 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+
+int		Server::getIndex(const std::string& nick) // TODO recomplete error backtracking
+{
+	User*	_user;
+
+	_user = NULL;
+	for (size_t i = 1; i < _sockets.size(); i++)
+	{
+		_user = getUser(i);
+		if (!_user)
+			return (-1);
+		if (_user->getNickname() == Libftpp::strToLower(nick))
+			return (i);
+	}
+	return (-1);
+}
+
+User* 	Server::getUser(const std::string& nick)
+{
+	for (std::map<int, User>::iterator it = _users.begin(); \
+		it != _users.end(); it++)
+	{
+		if ((*it).second.getNickname() == Libftpp::strToLower(nick))
+			return (&(*it).second);
+	}
+	return (NULL);
+}
+
+/**
+ * @brief 
+ * 
+ * @param index index of the user's socket in sockets container
+ * @return User* or NULL if failed to find a user bound to INDEX 
+ */
+User* 	Server::getUser(const size_t& index)
+{
+	User*	ptr;
+
+	ptr = NULL;
+	try
+	{
+		ptr = &_users.at(getSockfd(index));
+		return (ptr);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Error: getUser() failure: " << e.what() << '\n';
+		return (NULL);
+	}
+	return (NULL);
+}
+
+size_t	 	Server::getSocketsSize(void)
+{
+	return (_sockets.size());
+}
 
 /**
  * @brief returns the indexed socket's file descriptor
@@ -19,7 +75,7 @@
  * 			Server's pollfds vector
  * @return int 
  */
-int 	Server::getSockfd(const size_t& index)
+const int& 	Server::getSockfd(const size_t& index)
 {
 	return (_sockets[index].fd);
 }
@@ -54,7 +110,7 @@ const std::string& 	Server::getStartDate()
 size_t		Server::getNbOfUsers(void)
 {
 	// TODO complete
-	return (Server::_clients.size());
+	return (Server::_users.size());
 }
 
 size_t		Server::getMaxOfUsers(void)

@@ -6,7 +6,7 @@
 #    By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 20:26:23 by TheTerror         #+#    #+#              #
-#    Updated: 2024/04/22 16:09:16 by jm               ###   ########lyon.fr    #
+#    Updated: 2024/04/26 10:40:03 by jm               ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,13 @@ LIBFT_PATH		=	./libftpp/
 
 CXX				=	c++
 
-CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD
+CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD -g3
 
-FILES			=	main UserGettersSetters UserRegistration ServerGettersSetters
+FILES			=	main UserGettersSetters UserRegistration ServerGettersSetters \
+					UserCommands ChannelGettersSetters ChannelMember
 
 INCLUDE			=	Include
-CLASSES			=	Server User
+CLASSES			=	Server User Channel
 
 OBJS_DIR		=	objs/
 

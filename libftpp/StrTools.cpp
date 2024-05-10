@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 20:12:50 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/21 20:24:49 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/04/26 16:16:28 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,12 @@
  * 
  * @param src the given string
  * @param set the set of delim charaters
+ * @param preserve_delim premits to assert whether the delim character, if encountered,
+ * 		should be kept up on the returned substr
  * @return (std::string) the first substr extracted
  */
-std::string		Libftpp::extractStr(std::string& src, const std::string& set)
+std::string		Libftpp::extractStr(std::string& src, \
+	const std::string& set, bool preserve_delim)
 {
 	std::string		extracted;
 
@@ -32,7 +35,8 @@ std::string		Libftpp::extractStr(std::string& src, const std::string& set)
 	}
 	if (!src.empty() && set.find(src.at(0)) != set.npos)
 	{
-		extracted += src.at(0);
+		if (preserve_delim)
+			extracted += src.at(0);
 		src.erase(0, 1);
 	}
 	return (extracted);

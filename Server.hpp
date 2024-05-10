@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:18 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/22 20:28:09 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/03 14:43:34 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # include <list>
 # include "User.hpp"
 # include "./libftpp/Libftpp.hpp"
-// # include "Channel.hpp"
+# include "Channel.hpp"
 
 # define MIN_PORT 1023
 # define MAX_PORT 65535
@@ -39,6 +39,7 @@
 # define MAX_CONNECTIONS 20
 
 class User;
+class Channel;
 
 class Server
 {
@@ -48,17 +49,23 @@ class Server
 		~Server();
 
 		static bool						is_connected;
+		static bool						isPionner_flag;
 		static std::string				sourcename;
 		static std::string				_password;
-		static std::string				broadcastMsg;
+		static std::string						broadcastMsg;
+		static std::map<std::string, Channel>	channels;
 
 
-		static bool		launchServer(const std::string &port, const std::string &password);
-		static bool 	isUniqueNick(const std::string &nick);
-		static bool 	isValidNick(const std::string &nick);
-		static bool 	broadcasting(void);
-		static int 		getSockfd(const size_t& index);
-		static short 	getSockrevents(const size_t& index);
+		static bool					launchServer(const std::string &port, const std::string &password);
+		static bool 				isUniqueNick(const std::string &nick);
+		static bool 				isValidNick(const std::string &nick);
+		static bool 				broadcasting(void);
+		static int					getIndex(const std::string& nick);
+		static User*				getUser(const std::string& nick);
+		static User*				getUser(const size_t& index);
+		static size_t				getSocketsSize(void);
+		static const int& 			getSockfd(const size_t& index);
+		static short 				getSockrevents(const size_t& index);
 		static const std::string& 	getStartDate();
 		static size_t				getNbOfUsers(void);
 		static size_t				getMaxOfUsers(void);
@@ -68,17 +75,27 @@ class Server
 		static size_t				getNbOfUnkConnect(void);
 		static size_t				getNbOfChannels(void);
 		static const std::string	getMsgOfTheDay(void);
+		static int					removeChannel(const std::string& chann_name);
+
+		static std::string	serverMessage(std::string src, std::string cmd);
+		static std::string	serverMessage(std::string src, std::string cmd, \
+			std::string msg);
+		static std::string	numericMessage(std::string src, std::string num, \
+			std::string target, std::string msg);
+		static std::string	numericMessage(std::string src, std::string num, \
+			std::string other_params);
+		static std::string	ErrorMessage(std::string msg);
 	
 	private:
 		static uint16_t					_port;
 		static std::string				_startDate;
 		static std::vector<pollfd>		_sockets;
-		static std::map<int, User>		_clients;
+		static std::map<int, User>		_users;
 		// std::map<std::string, Channel*> _channels;
-		static bool	initServer(const std::string &port, const std::string &password);
-		static bool	createUser(void);
-		static bool	closeClient(int i);
-		static bool	loopOnUsers();
+		static bool					initServer(const std::string &port, const std::string &password);
+		static bool					createUser(void);
+		static bool					closeClient(int i);
+		static bool					loopOnUsers();
 
 };
 

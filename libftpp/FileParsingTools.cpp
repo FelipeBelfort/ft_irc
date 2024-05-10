@@ -6,14 +6,14 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 20:14:28 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/21 19:41:26 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/08 19:39:23 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Libftpp.hpp"
 
 /**
- * @brief authenticate a filename by parsing the mandatory part
+ * @brief passCommand a filename by parsing the mandatory part
  * 		and eventually the extension part relative to extension parameter
  * @param filename the name of the file to be parse
  * @param extension the eventual accurate extension

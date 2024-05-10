@@ -6,20 +6,24 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/04/21 17:22:21 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/08 15:55:12 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
+/* ************************ Server Class attributes ************************* */
 bool				Server::is_connected = true;
+bool				Server::isPionner_flag = true;
 uint16_t			Server::_port = 0;
 std::string			Server::_password;
 std::string			Server::broadcastMsg;
 std::string			Server::sourcename;
 std::string			Server::_startDate;
 std::vector<pollfd>	Server::_sockets;
-std::map<int, User>	Server::_clients;
+std::map<int, User>	Server::_users;
+std::map<std::string, Channel>	Server::channels;
+/* ************************************************************************** */
 
 Server::Server()
 {
@@ -28,17 +32,16 @@ Server::Server()
 Server::~Server()
 {
 }
-
 /**
  * @brief 
  * It initiates the server. If the PORT is not a valid port or if socket() fails it returns false,
  *  if bind() or listen() fails it closes the fd and return false.
- * In case of success it pushs the server socket to the list of sockets and returns true. 
+ * In case of success it pushes the server socket to the list of sockets and returns true. 
  * The password is setted by default
  * 
- * @param port expected a int between MIN_PORT and MAX_PORT
+ * @param port expected, a int between MIN_PORT and MAX_PORT
  * @param password 
- * @return boolean
+ * @return true, false
  */
 bool	Server::initServer(const std::string &port, const std::string &password)
 {
@@ -48,15 +51,14 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 	sockaddr_in	server_addr;
 	time_t		tm;
 
-
 	option = 1;
 	if (!Libftpp::strIsInt(port)) 
 		return (Libftpp::error("invalid port number '" + port + "'"));
 	p = atof(port.c_str());
 	if (p < MIN_PORT || p > MAX_PORT)
 		return (Libftpp::error("invalid port number '" + port + "'" \
-			+ "\nvalid range: " + Libftpp::itoa(MIN_PORT) + " < port " \
-			+ " > " + Libftpp::itoa(MAX_PORT)));
+			+ "\nvalid range: " + Libftpp::itoa(MIN_PORT) + " < port > " \
+			+ Libftpp::itoa(MAX_PORT)));
 	_port = p;
 	_password = password;
 	server_socket.fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -85,14 +87,14 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 /**
  * @brief 
  * It calls the initServer() and if it returns true 
- *  then it calls the signal() to catch 'ctrl+c' and launchs the loop with pool() to listen 
+ *  then it calls the signal() to catch 'ctrl+c' and launchs the loop with poll() to listen 
  * the sockets
  *  
  * TODO => error management and the actions inside the for loop
  * 
- * @param port  to be used in initServer() 
- * @param password  to be used in initServer()
- * @return boolean
+ * @param port  the access port to the server
+ * @param password  password connection the server
+ * @return true, false
  */
 bool	Server::launchServer(const std::string &port, const std::string &password)
 {
@@ -108,8 +110,8 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
 		poll_ret = poll(&_sockets[0], _sockets.size(), 10);
 		if (poll_ret < 0)
 			return (Libftpp::ft_perror("poll()"));
-		else if (!poll_ret)
-			continue; // timeout
+		else if (!poll_ret) // timeout
+			continue;
 		if (_sockets[0].revents & POLLIN)
 			if (!createUser())
 				return (false);
@@ -124,7 +126,6 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
  * @brief it loops on all sockets created
  * 		- checking eventual I/O errors flagged by poll,
  * 		- then eventually reading incoming data by the respective fd
- * 
  * @return true 
  * @return false 
  */
@@ -132,10 +133,10 @@ bool	Server::loopOnUsers()
 {
 	int			fdbk;
 	char		buff[BUFF_SIZE];
-	int			read_ret;
+	int			recv_ret;
 
 	fdbk = true;
-	read_ret = -111;
+	recv_ret = -111;
 	for (size_t i = 1; i < _sockets.size(); )
 	{
 		if (_sockets[i].revents & POLLERR) // TODO verify error cases before
@@ -151,33 +152,37 @@ bool	Server::loopOnUsers()
 		if (_sockets[i].revents & POLLIN)
 		{
 			memset(buff, 0, BUFF_SIZE);
-			read_ret = recv(_sockets[i].fd, buff, BUFF_SIZE - 1, MSG_DONTWAIT);
-			if (read_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+			recv_ret = recv(_sockets[i].fd, buff, BUFF_SIZE - 1, MSG_DONTWAIT);
+			if (recv_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 			{
 				i++;
 				continue;
 			}
-			else if (read_ret < 0)
+			else if (recv_ret < 0)
 				return (Libftpp::ft_perror("recv()"));
-			else if (!read_ret)
+			else if (!recv_ret)
 			{
-std::cout << "client => " << _sockets[i].fd << " closed " << std::endl;
+/*DEBUG*/std::cout << "client => " << _sockets[i].fd << " recv_ret = 0" << std::endl;
+				if (!closeClient(i))
+					return (false);
+				continue;
 			}
-			buff[read_ret] = 0;
-			fdbk = _clients.at(_sockets[i].fd).routine(buff, i);
+			buff[recv_ret] = 0;
+			fdbk = _users.at(_sockets[i].fd).routine(i, buff);
 			if (fdbk == _fatal)
 			{
 				if (!closeClient(i))
 					return (false);
-std::cout << "user deleted"<< std::endl;
+/*DEBUG*/std::cout << "user deleted"<< std::endl;
 				continue;
 			}
 			else if (!fdbk)
 				return (false);
+// std::cerr << ":::::::::::: debugging ::::::::::::: " << '\n';
 		}
 		if (_sockets[i].revents & POLLOUT)
 		{
-			fdbk = _clients.at(_sockets[i].fd).routine("", i);
+			fdbk = _users.at(_sockets[i].fd).routine(i, "");
 			if (fdbk == _fatal)
 			{
 				if (!closeClient(i))
@@ -204,7 +209,7 @@ std::cout << "user deleted"<< std::endl;
  */
 bool	Server::closeClient(int i)
 {
-	_clients.erase(_sockets[i].fd);
+	_users.erase(_sockets[i].fd);
 	if (close(_sockets[i].fd) < 0)
 		return (Libftpp::ft_perror("close()"));
 	_sockets.erase(_sockets.begin() + i);
@@ -213,10 +218,10 @@ bool	Server::closeClient(int i)
 }
 
 /**
- * @brief 
- * Fonction to create a user socket and push it in the list
- * @return boolean
- * TODO => error management
+ * @brief creates a new User instance in users container 
+ * 		associated to the socket file descriptor returned by accept().
+ * 		This latter is also appended to sockets container.
+ * @return true, false
  */
 bool	Server::createUser(void)
 {
@@ -224,10 +229,11 @@ bool	Server::createUser(void)
 
 	user_socket.fd = accept(_sockets[0].fd, NULL, NULL);
 	if (user_socket.fd == -1)
-		return (false); // TODO error msg
+		return (Libftpp::ft_perror("accept()"));
 	user_socket.events = POLLIN | POLLOUT;
 	_sockets.push_back(user_socket);
-	_clients.insert(std::pair<int, User>(user_socket.fd, User()));
+	_users.insert(std::pair<int, User>( \
+		user_socket.fd, User(user_socket.fd)));
 	return (true);
 }
 
@@ -250,7 +256,7 @@ bool	Server::isValidNick(const std::string &nick)
 	fdbk = true;
 	if (nick.empty())
 		return (false);
-	fdbk = nick.find_first_of(" ,*?!@.") == std::string::npos && nick.find_first_of("#$:") != 0;
+	fdbk = nick.find_first_of(" ,*?!@.#&$:") == std::string::npos && nick.find_first_of("#&$:") != 0;
 	fdbk &= !std::isdigit(nick[0]);
 	// TODO add rule They MUST NOT start with a character listed as a channel type, channel membership prefix, or prefix listed in the IRCv3 multi-prefix Extension.
 	return (fdbk);
@@ -267,8 +273,8 @@ bool	Server::isValidNick(const std::string &nick)
  */
 bool	Server::isUniqueNick(const std::string &nick)
 {
-	for (std::map<int, User>::iterator it = _clients.begin(); \
-			it != _clients.end(); it++)
+	for (std::map<int, User>::iterator it = _users.begin(); \
+			it != _users.end(); it++)
 	{
 		if ((*it).second.getNickname() == Libftpp::strToLower(nick))
 			return (false);
@@ -285,8 +291,8 @@ bool	Server::isUniqueNick(const std::string &nick)
  */
 bool	Server::broadcasting(void)
 {
-	for (std::map<int, User>::iterator it = _clients.begin(); \
-			it != _clients.end(); it++)
+	for (std::map<int, User>::iterator it = _users.begin(); \
+			it != _users.end(); it++)
 	{
 		if ((*it).second.isRegistered())
 		{
@@ -296,6 +302,12 @@ bool	Server::broadcasting(void)
 	broadcastMsg.clear();
 // std::cout << "**************************broadcasted!" << std::endl;
 	return true;
+}
+
+int				Server::removeChannel(const std::string& chann_name)
+{
+	channels.erase(Libftpp::strToLower(chann_name));
+	return (true);
 }
 
 /**
@@ -308,4 +320,72 @@ void	exitServer(int sign)
 {
 	if (sign == SIGINT)
 		Server::is_connected = false;
+}
+
+std::string		Server::serverMessage(std::string src, \
+	std::string cmd)
+{
+	std::string	line;
+
+	if (src.empty())
+		src.assign("*");
+	if (cmd.empty())
+		cmd.assign("*");
+	line = ":" + src + " " + cmd + "\r\n";
+	return (line);
+}
+std::string		Server::serverMessage(std::string src, \
+	std::string cmd, std::string msg)
+{
+	std::string	line;
+
+	if (src.empty())
+		src.assign("*");
+	if (cmd.empty())
+		cmd.assign("*");
+	if (msg.empty())
+		msg.assign("");
+	line = ":" + src + " " + cmd + " :" + msg + "\r\n";
+	return (line);
+}
+std::string		Server::numericMessage(std::string src, \
+	std::string num, std::string target, std::string msg)
+{
+	std::string	line;
+
+	if (src.empty())
+		src.assign("*");
+	if (num.empty())
+		num.assign("*");
+	if (target.empty())
+		target.assign("*");
+	if (msg.empty())
+		msg.assign("");
+	line = ":" + src + " " + num + " " + target + " :" + msg + "\r\n";
+	return (line);
+}
+
+std::string		Server::numericMessage(std::string src, \
+	std::string num, std::string other_params)
+{
+	std::string	line;
+
+	if (src.empty())
+		src.assign("*");
+	if (num.empty())
+		num.assign("*");
+	if (other_params.empty())
+		other_params.assign("*");
+	line = ":" + src + " " + num + " " + other_params + "\r\n";
+	return (line);
+}
+
+std::string		Server::ErrorMessage(std::string msg)
+{
+	std::string	line;
+
+	if (msg.empty())
+		msg.assign(" ");
+	line = "ERROR :" + msg + "\r\n";
+	return (line);
 }
