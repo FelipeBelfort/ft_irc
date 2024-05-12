@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 17:52:11 by jm                #+#    #+#             */
-/*   Updated: 2024/05/10 17:53:10 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 01:53:20 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@
  * If the poll.revents faces a problem this fonction will be called to close the socket and erase both the User and the 
  * pollfd from the list. 
  * 
- * @param i the index of the revent in the pollfd list
+ * @param index the index of the revent in the pollfd list
  * @return boolean
  */
-bool	Server::closeClient(int i)
+bool	Server::closeClient(size_t index)
 {
-	_users.erase(_sockets[i].fd);
-	if (close(_sockets[i].fd) < 0)
+	_users.erase(_sockets[index].fd);
+	if (close(_sockets[index].fd) < 0)
 		return (Libftpp::ft_perror("close()"));
-	_sockets.erase(_sockets.begin() + i);
+	_sockets.erase(_sockets.begin() + index);
 	return (true);
 
 }

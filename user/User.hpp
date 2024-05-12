@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:29 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/10 17:32:26 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 01:23:51 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ class User
 		int		rpl_isupport_numerics(void);
 		int		motd_rpl_numerics(void);
 
+		int		leaveAllChannels(void);
 		int		checkJoinTokens(std::string& channels_list, std::string& keys_list);
 		int		tryJoin(const size_t& index, std::string& chan_name, std::string& key);
 		int		numberOfTokens(std::string tokens);

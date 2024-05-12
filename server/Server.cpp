@@ -6,13 +6,13 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/10 17:53:06 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 13:28:53 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-/* ************************ Server Class attributes ************************* */
+/* *********************** 'Server' Class attributes ************************ */
 bool				Server::is_connected = true;
 bool				Server::isPionner_flag = true;
 uint16_t			Server::_port = 0;
@@ -32,6 +32,47 @@ Server::Server()
 Server::~Server()
 {
 }
+
+/**
+ * @brief 
+ * It calls the initServer() and if it returns true 
+ *  then it calls the signal() to catch 'ctrl+c' and launchs the loop with poll() to listen 
+ * the sockets
+ *  
+ * TODO => error management and the actions inside the for loop
+ * 
+ * @param port  the access port to the server
+ * @param password  password connection the server
+ * @return true, false
+ */
+bool	Server::launchServer(const std::string &port, const std::string &password)
+{
+	int			poll_ret;
+
+	poll_ret = -111;
+	if (!initServer(port, password))
+		return (false);
+	signal(SIGINT, &exitServer);
+	while (is_connected)
+	{
+		_sockets[0].revents = 0;
+		poll_ret = poll(&_sockets[0], _sockets.size(), 10);
+		if (poll_ret < 0)
+			return (Libftpp::ft_perror("poll()"));
+		else if (!poll_ret) // timeout
+			continue;
+		if (_sockets[0].revents & POLLIN)
+			if (!createUser())
+				return (false);
+		if (!loopOnUsers())
+			return (false);
+	}
+	std::cout << "\nExiting Server..." << std::endl; //TODO clean all up because it's static class
+	if (!atExitProcess())
+		return (false);
+	return (true);
+}
+
 /**
  * @brief 
  * It initiates the server. If the PORT is not a valid port or if socket() fails it returns false,
@@ -81,44 +122,6 @@ bool	Server::initServer(const std::string &port, const std::string &password)
 	Libftpp::trim(_startDate, " \n");
 	_sockets.push_back(server_socket);
 	sourcename.assign((std::string) HOSTNAME + ":" + port);
-	return (true);
-}
-
-/**
- * @brief 
- * It calls the initServer() and if it returns true 
- *  then it calls the signal() to catch 'ctrl+c' and launchs the loop with poll() to listen 
- * the sockets
- *  
- * TODO => error management and the actions inside the for loop
- * 
- * @param port  the access port to the server
- * @param password  password connection the server
- * @return true, false
- */
-bool	Server::launchServer(const std::string &port, const std::string &password)
-{
-	int			poll_ret;
-
-	poll_ret = -111;
-	if (!initServer(port, password))
-		return (false);
-	signal(SIGINT, &exitServer);
-	while (is_connected)
-	{
-		_sockets[0].revents = 0;
-		poll_ret = poll(&_sockets[0], _sockets.size(), 10);
-		if (poll_ret < 0)
-			return (Libftpp::ft_perror("poll()"));
-		else if (!poll_ret) // timeout
-			continue;
-		if (_sockets[0].revents & POLLIN)
-			if (!createUser())
-				return (false);
-		if (!loopOnUsers())
-			return (false);
-	}
-	std::cout << "\nExiting Server..." << std::endl; //TODO clean up all because it's static class
 	return (true);
 }
 
@@ -201,7 +204,7 @@ std::cout << "user deleted"<< std::endl;
 
 /**
  * @brief 
- * Handle the SIGINT and changes the is_connected state to exit the server
+ * Handle the SIGINT by toggling the 'is_connected' flag to exit the server
  * 
  * @param sign 
  */
@@ -209,4 +212,14 @@ void	exitServer(int sign)
 {
 	if (sign == SIGINT)
 		Server::is_connected = false;
+}
+
+int		Server::atExitProcess(void)
+{
+	_users.clear();
+	channels.clear();
+	for (size_t i = _sockets.size(); i > 0; i = _sockets.size())
+		closeClient(i);
+	_sockets.clear();
+	return (true);
 }

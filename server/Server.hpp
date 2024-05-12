@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:18 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/10 17:33:02 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 01:56:38 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,14 +77,16 @@ class Server
 		static const std::string	getMsgOfTheDay(void);
 		static int					removeChannel(const std::string& chann_name);
 
-		static std::string	serverMessage(std::string src, std::string cmd);
-		static std::string	serverMessage(std::string src, std::string cmd, \
+		static int					atExitProcess(void);
+
+		static std::string			serverMessage(std::string src, std::string cmd);
+		static std::string			serverMessage(std::string src, std::string cmd, \
 			std::string msg);
-		static std::string	numericMessage(std::string src, std::string num, \
+		static std::string			numericMessage(std::string src, std::string num, \
 			std::string target, std::string msg);
-		static std::string	numericMessage(std::string src, std::string num, \
+		static std::string			numericMessage(std::string src, std::string num, \
 			std::string other_params);
-		static std::string	ErrorMessage(std::string msg);
+		static std::string			ErrorMessage(std::string msg);
 	
 	private:
 		static uint16_t					_port;
@@ -94,8 +96,8 @@ class Server
 		// std::map<std::string, Channel*> _channels;
 		static bool					initServer(const std::string &port, const std::string &password);
 		static bool					createUser(void);
-		static bool					closeClient(int i);
-		static bool					loopOnUsers();
+		static bool					closeClient(size_t index);
+		static bool					loopOnUsers(void);
 
 };
 

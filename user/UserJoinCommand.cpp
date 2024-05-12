@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 18:02:02 by jm                #+#    #+#             */
-/*   Updated: 2024/05/10 18:02:59 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 01:31:04 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@ int		User::joinCommand(const size_t& index) //TODO recheck carefully the join co
 			this->_nickname, "you have not registered");
 		return (_ignore);
 	}
+	Libftpp::trim(this->_parameters, " \t\r\n");
+	if (this->_parameters == "0")
+		return (leaveAllChannels());
 	channels_list = Libftpp::extractStr(this->_parameters, " \t\r\n", false);
 	keys_list = this->_parameters;
 	Libftpp::trim(channels_list, " \t\r\n");
@@ -58,6 +61,23 @@ int		User::joinCommand(const size_t& index) //TODO recheck carefully the join co
 		fdbk = tryJoin(index, chan_name, key);
 		if (fdbk != true)
 			return (fdbk);
+	}
+	return (true);
+}
+
+int		User::leaveAllChannels(void)
+{
+	for (std::set<std::string>::iterator it = this->_joinedchannels.begin(); \
+		it != this->_joinedchannels.end(); it++)
+	{
+		try
+		{
+			Server::channels.at(*it).userForceQuit(this->_sockfd, this->_nickname);
+		}
+		catch(const std::exception& e)
+		{
+/*DEBUG*/	std::cerr << "Fatal: leaveAllChannels() failed: " << e.what() << '\n';
+		}
 	}
 	return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:43 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/10 18:33:43 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/10 19:28:04 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int		User::routine(const size_t& index, std::string buff)
 
 	fdbk = true;
 	this->_inmsg += buff;
-	if (this->_inmsg.find_first_of('\n', 0) != this->_inmsg.npos)
+	if (this->_inmsg.find_first_of('\n') != this->_inmsg.npos)
 	{
 /*DEBUG*/std::cout << "inmsg: '" + this->_inmsg << "'" << std::endl;
 		fdbk = parse(index);
