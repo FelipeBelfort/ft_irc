@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/12 13:28:53 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 14:17:06 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,16 +58,16 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
 		_sockets[0].revents = 0;
 		poll_ret = poll(&_sockets[0], _sockets.size(), 10);
 		if (poll_ret < 0)
-			return (Libftpp::ft_perror("poll()"));
+			is_connected = Libftpp::ft_perror("poll()");
 		else if (!poll_ret) // timeout
 			continue;
-		if (_sockets[0].revents & POLLIN)
+		if (is_connected && _sockets[0].revents & POLLIN)
 			if (!createUser())
-				return (false);
-		if (!loopOnUsers())
-			return (false);
+				is_connected = false;
+		if (is_connected && !loopOnUsers())
+			is_connected = false;
 	}
-	std::cout << "\nExiting Server..." << std::endl; //TODO clean all up because it's static class
+	std::cout << "\nExiting Server..." << std::endl;
 	if (!atExitProcess())
 		return (false);
 	return (true);
@@ -219,7 +219,7 @@ int		Server::atExitProcess(void)
 	_users.clear();
 	channels.clear();
 	for (size_t i = _sockets.size(); i > 0; i = _sockets.size())
-		closeClient(i);
+		closeClient(i - 1);
 	_sockets.clear();
 	return (true);
 }

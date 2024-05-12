@@ -6,7 +6,7 @@
 /*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 17:52:11 by jm                #+#    #+#             */
-/*   Updated: 2024/05/12 01:53:20 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/12 14:16:10 by jm               ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,13 @@
 bool	Server::closeClient(size_t index)
 {
 	_users.erase(_sockets[index].fd);
-	if (close(_sockets[index].fd) < 0)
-		return (Libftpp::ft_perror("close()"));
+	if (_sockets[index].fd >= 0)
+	{
+		if (close(_sockets[index].fd) < 0)
+			return (Libftpp::ft_perror("close()"));
+	}
 	_sockets.erase(_sockets.begin() + index);
 	return (true);
-
 }
 
 /**
