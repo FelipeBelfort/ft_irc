@@ -65,6 +65,8 @@ int	User::passCommand(const size_t& index)
 		return(_fatal);
 	}
 	this->_password.clear();
+	if (Server::_password.empty())
+		return (true);
 // /*DEBUG*/	this->_outmsg += "received pack: " + this->_command + ' ' + this->_parameters + "\r\n";
 	Libftpp::trim(this->_parameters, " \t\n\r");
 	if (this->_parameters[0] == ':')
@@ -113,7 +115,7 @@ int	User::nickCommand(const size_t& index)
 	std::string		name;
 
 	(void)	index;
-	if (this->_password.empty())
+	if (this->_password.empty() && !Server::_password.empty())
 	{
 		this->_outmsg += Server::ErrorMessage(\
 			"Registration failure, sequence-> CAP... - PASS... - NICK... - USER...");
@@ -235,7 +237,8 @@ int	User::userCommand(const size_t& index)
  */
 int	User::registrationComplete(void)
 {
-	if (!this->_cap.empty() && !this->_password.empty() && \
+	if (!this->_cap.empty() && \
+		(!this->_password.empty() || (this->_password.empty() && Server::_password.empty())) && \
 		!this->_nickname.empty() && !this->_username.empty())
 		this->_registered = true;
 	else
