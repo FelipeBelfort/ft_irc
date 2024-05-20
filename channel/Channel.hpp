@@ -51,7 +51,7 @@ class Channel
 		void				setKey(const std::string& key);
 		void				setTopicProtection(bool b);
 		void				setInviteOnly(bool b);
-		void				setLimit(int limit);
+		void				setLimit(double limit);
 		void				setTopic(const std::string& author, \
 			const std::string& topic);
 		void				unsetKey(void);

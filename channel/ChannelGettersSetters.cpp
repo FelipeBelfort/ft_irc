@@ -151,10 +151,10 @@ void				Channel::setInviteOnly(bool b)
 	this->_invite_only = b;
 }
 
-void				Channel::setLimit(int limit)
+void				Channel::setLimit(double limit)
 {
 	this->_limit_is_set = true;
-	this->_limit = limit;
+	this->_limit = limit < 1 ? 0 : limit;
 }
 
 void				Channel::setTopic(const std::string& author, \
