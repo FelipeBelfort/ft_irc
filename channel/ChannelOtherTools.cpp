@@ -16,6 +16,8 @@ int		Channel::userForceQuit(const int& sockfd, const std::string& username)
 {
 	informMembers(username, "PART " + this->_name);
 	this->_members.erase(sockfd);
+	if (!this->getNbOfMembers())
+		return (Server::removeChannel(this->_name), true);
 	return (true);
 }
 

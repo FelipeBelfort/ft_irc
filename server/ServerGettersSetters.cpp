@@ -145,8 +145,7 @@ size_t					Server::getNbOfUnkConnect(void)
 
 size_t					Server::getNbOfChannels(void)
 {
-	// TODO complete
-	return (0);
+	return (channels.size());
 }
 
 const std::string		Server::getMsgOfTheDay(void)

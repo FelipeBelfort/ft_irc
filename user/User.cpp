@@ -33,6 +33,7 @@ User::~User(void)
 {
 	onUserRemove();
 }
+
 /**
  * @brief it always firstly concatenates the old buffers 
  * 		contents stuck in 'inmsg' with the new buffer content.

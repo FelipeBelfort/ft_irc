@@ -47,6 +47,7 @@ class Channel
 		const std::string	getKey(void) const;
 		const size_t&		getLimit(void) const;
 		const std::string	getCreationTime(void) const;
+		size_t				getNbOfMembers(void) const;
 
 		void				setKey(const std::string& key);
 		void				setTopicProtection(bool b);

@@ -112,6 +112,11 @@ const std::string	Channel::getKey(void) const
 	return (this->_key);
 }
 
+size_t				Channel::getNbOfMembers(void) const
+{
+	return (this->_members.size());
+}
+
 const std::string	Channel::getCreationTime(void) const
 {
 	return (this->_creationTimestamp);
