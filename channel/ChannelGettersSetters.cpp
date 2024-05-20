@@ -208,3 +208,50 @@ void				Channel::rmFromInvitedList(const std::string& username)
 {
 	this->_invited.erase(Libftpp::strToLower(username));
 }
+
+size_t			Channel::getNbOfMembers(void) const
+{
+	return (this->_members.size());
+}
+
+size_t			Channel::getNbOfOperators(void) const
+{
+	size_t	ops = 0;
+
+	if (!this->getNbOfMembers())
+		return (0);
+	for (std::map<int, Channel::Member>::const_iterator it = this->_members.begin(); \
+			it != this->_members.end(); it++)
+	{
+		if ((*it).second.isOperator())
+			ops++;
+	}
+	return (ops);
+}
+
+int		Channel::getOldestMember(void) const
+{
+	std::map<int, Member>::const_iterator oldest = this->_members.begin();
+
+	for (std::map<int, Member>::const_iterator it = ++this->_members.begin(); \
+			it != this->_members.end(); it++)
+	{
+		if ((*oldest).second.getTimestamp() > (*it).second.getTimestamp())
+			oldest = it;
+	}
+	return ((*oldest).first);
+}
+
+/**
+ * @brief 
+ * If there are no more channel operators and the channel is not empty it will look for the oldest member to make him an operator
+ */
+void				Channel::setNewOperator(void)
+{
+	if (!this->getNbOfOperators() && this->getNbOfMembers())
+	{
+		int	new_op_fd = this->getOldestMember();
+		this->_members.at(new_op_fd).setOperator(true);
+		this->informMembers(Server::sourcename, "MODE " + this->_name, "+o " + this->_members.at(new_op_fd).getName());
+	}
+}

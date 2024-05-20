@@ -48,7 +48,10 @@ class Channel
 		const size_t&		getLimit(void) const;
 		const std::string	getCreationTime(void) const;
 		size_t				getNbOfMembers(void) const;
+		size_t				getNbOfOperators(void) const;
+		int					getOldestMember(void) const;
 
+		void				setNewOperator(void);
 		void				setKey(const std::string& key);
 		void				setTopicProtection(bool b);
 		void				setInviteOnly(bool b);
@@ -97,6 +100,8 @@ class Channel
 				const int&			getSock_fd(void) const;
 				User&				getUser(void) const;
 				const std::string&	getName(void) const;
+				const std::time_t&	getTimestamp(void) const;
+
 				bool				isOperator(void) const;
 			
 				void				setIndex(const size_t& id);
@@ -108,8 +113,9 @@ class Channel
 
 				Member();
 
-				size_t			_index;
-				bool			_operator;
+				size_t				_index;
+				bool				_operator;
+				const std::time_t	_timestamp;
 		};
 
 		std::string					_name;

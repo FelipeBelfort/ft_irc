@@ -12,11 +12,11 @@
 
 #include "Channel.hpp"
 
-Channel::Member::Member() : _index(0), _operator(false)
+Channel::Member::Member() : _index(0), _operator(false), _timestamp(std::time(NULL))
 {
 }
 
-Channel::Member::Member(const size_t& index) : _index(index), _operator(false)
+Channel::Member::Member(const size_t& index) : _index(index), _operator(false), _timestamp(std::time(NULL))
 {
 }
 
@@ -76,4 +76,9 @@ void				Channel::Member::setOperator(bool b)
 void				Channel::Member::insertOutMessage(const std::string& msg)
 {
 	getUser().insertOutMessage(msg);
+}
+
+const std::time_t&		Channel::Member::getTimestamp(void) const
+{
+	return (this->_timestamp);
 }
