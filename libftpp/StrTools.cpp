@@ -210,7 +210,7 @@ bool				Libftpp::strIsDouble(std::string str)
 		i++;
 	if (i < str.size() && str.at(i) == '.' && i + 1 < str.size() && !std::isdigit(str.at(i + 1)))
 		return (false);
-	for (i = i; i < str.size() && std::isdigit(str.at(i)); i++)				// nonempty sequence of decimal digits
+	for ( ; i < str.size() && std::isdigit(str.at(i)); i++)				// nonempty sequence of decimal digits
 	{}
 	if (i >= str.size() || str.at(i) != '.' )								// decimal-point character 
 		return (false);
@@ -269,7 +269,7 @@ bool				Libftpp::strIsInt(std::string str)
 		return (false);
 	if (str.at(i) == '-' || str.at(i) == '+')					// (optional) plus or minus sign 
 		i++;
-	for (i = i; i < str.size(); i++)							// nonempty sequence of decimal digits
+	for ( ; i < str.size(); i++)							// nonempty sequence of decimal digits
 	{
 		if (!std::isdigit(str.at(i)))
 			return (false);
@@ -303,7 +303,7 @@ bool				Libftpp::strIsFloat(std::string str)
 		i++;
 	if (i >= str.size() || (!std::isdigit(str.at(i)) && str.at(i) != '.'))
 		return (false);
-	for (i = i; i < str.size() && std::isdigit(str.at(i)); i++)		// nonempty sequence of decimal digits
+	for ( ; i < str.size() && std::isdigit(str.at(i)); i++)		// nonempty sequence of decimal digits
 	{}
 	if (i >= str.size() || str.at(i) != '.')						// decimal-point character 
 		return (false);
