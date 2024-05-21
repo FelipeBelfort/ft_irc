@@ -87,6 +87,12 @@ class Server
 		static std::string			numericMessage(std::string src, std::string num, \
 			std::string other_params);
 		static std::string			ErrorMessage(std::string msg);
+
+		class UserNotFoundException : public std::exception
+		{
+			public :
+				const char*	what(void) const throw();
+		};
 	
 	private:
 		static uint16_t					_port;

@@ -30,6 +30,8 @@ int		Server::getIndex(const std::string& nick) // TODO recomplete error backtrac
 
 User* 	Server::getUser(const std::string& nick)
 {
+	if (_users.empty())
+		return (NULL);
 	for (std::map<int, User>::iterator it = _users.begin(); \
 		it != _users.end(); it++)
 	{
@@ -77,7 +79,9 @@ size_t	 	Server::getSocketsSize(void)
  */
 const int& 	Server::getSockfd(const size_t& index)
 {
-	return (_sockets[index].fd);
+	if (index < _sockets.size())
+		return (_sockets[index].fd);
+	throw (UserNotFoundException());
 }
 
 /**
@@ -89,7 +93,9 @@ const int& 	Server::getSockfd(const size_t& index)
  */
 short 	Server::getSockrevents(const size_t& index)
 {
-	return (_sockets[index].revents);
+	if (index < _sockets.size())
+		return (_sockets[index].revents);
+	return (_error);
 }
 
 /**

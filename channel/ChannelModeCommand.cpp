@@ -13,6 +13,28 @@
 #include "Channel.hpp"
 
 /**
+ * @brief 
+ * Clean the string to trim all the duplicated whitespaces or signs
+ * to avoid problems
+ * 
+ * @param str 
+ */
+static void	cleanMode(std::string& str)
+{
+	for (size_t pos_a = 0; pos_a != std::string::npos; pos_a = str.find_first_of("+-", pos_a + 1))
+	{
+		size_t	pos_b = str.find_first_not_of("-+", pos_a);
+		str.replace(pos_a, pos_b - pos_a, str.substr(pos_b - 1, 1));
+	}
+	for (size_t pos_a = 0; pos_a != std::string::npos; pos_a = str.find_first_of(" \t", pos_a + 1))
+	{
+		size_t	pos_b = str.find_first_not_of(" \t", pos_a);
+		str.replace(pos_a, pos_b - pos_a, " ");
+	}
+	Libftpp::trim(str, " \t\r\n");
+}
+
+/**
  * @brief Checks beforehand that all is rightful to then proceed
  * 
  * @param index 
@@ -22,8 +44,6 @@
  */
 int		Channel::mode(const size_t& index, User& src, std::string& mode)
 {
-	std::string		args;
-
 	if (!isMember(index))
 	{
 		src.insertOutMessage( \
@@ -37,9 +57,6 @@ int		Channel::mode(const size_t& index, User& src, std::string& mode)
 		rpl_creationTime(src);
 		return (_ignore);
 	}
-	args.assign(mode);
-	mode = Libftpp::extractStr(args, " \t\r\n", false);
-	Libftpp::trim(args, " \t\r\n");
 	if (!this->_members.at(Server::getSockfd(index)).isOperator())
 	{
 		src.insertOutMessage( \
@@ -47,127 +64,136 @@ int		Channel::mode(const size_t& index, User& src, std::string& mode)
 			src.getNickname() + " " + this->_name, "You're not channel operator"));
 		return (_ignore);
 	}
-	return (applyModes(src, mode, args));
+	cleanMode(mode);
+	return (applyModes(src, mode));
 }
 
 /**
  * @brief loops on mode changes requested launching 
  * 		accordingly either channel modes setter function 
  * 		or channel modes remover function.
- * 		At the end, it issues a MODE message to the channel 
- * 		to inform members of the effective changes
+ * 		In each loop it will call the rigth function to change each mode alone
  * 
  * @param src 
  * @param mode 
- * @param args 
  * @return int 
  */
-int		Channel::applyModes(User& src, std::string& mode, std::string& args)
+int		Channel::applyModes(User& src, std::string& mode)
 {
-	std::string		rp_mode = mode; /**! ineffective mode characters will be 
-									removed from this <modestring> to only keep 
-									the effective ones that will be issued to the channel */
-	std::string		rp_args; /**! used arguments will be added here to be included in the issued MODE message */
-	char			c;
+	char			sign = 0;
 
-	for (size_t i = 0; i < mode.size(); i++)
+	for (size_t i = mode.find_first_not_of("+-"); i < mode.size(); i = mode.find_first_not_of("+-"))
 	{
-		c = mode[i];
-		if (c == '+')
-			setChannelModes(++i, src, mode, args, rp_mode, rp_args);
-		else if (c == '-')
-			removeChannelModes(++i, src, mode, args, rp_mode, rp_args);
-		else
-			Libftpp::removeChars(rp_mode, &c);
+		if (mode[i - 1] && (mode[i - 1] == '+' || mode[i - 1] == '-'))
+			sign = mode[i - 1];
+		if (sign == '+')
+			setChannelModes(i, src, mode);
+		else if (sign == '-')
+			removeChannelModes(i, src, mode);
+		else if (!sign)
+			mode.erase(0, 1);
+		Libftpp::trim(mode, " \t\r\n");
 	}
-	Libftpp::trim(rp_args, " ");
-	if (rp_mode.size() > 1)
-		return (informMembers(src.getNickname(), "MODE " + this->_name, rp_mode + " " + rp_args));
 	return (true);
 }
 
 /**
- * @brief sets channel modes referenced in 'mode'
+ * @brief 
+ * 	Look for the next argument into the string and then erases it from the source and returns the element found
+ * 
+ * @param str source to be looked into
+ * @return std::string the argument OR empty if it doesn't exists
+ */
+std::string	Channel::getModeArgument(std::string& str)
+{
+	std::string	argument;
+	size_t	pos = str.find_first_of(" \t\r\n");
+		
+	if (pos != std::string::npos)
+	{
+		argument = str.substr(pos, str.find_first_of(" \t\r\n", pos + 1) - pos);
+		str.replace(str.find(argument), argument.size(), "");
+		Libftpp::trim(argument, " \t\r\n");
+	}
+
+	return (argument);
+}
+
+/**
+ * @brief sets channel modes referenced in 'mode' 
  * 
  * @param i actual index in modestring
  * @param src MODE command issuer
  * @param mode the modestring
- * @param args mode arguments
- * @param rp_mode effective modestring holder
- * @param rp_args effective arguments holder
  * @return int 
  */
-int		Channel::setChannelModes(size_t& i, User& src, std::string& mode, \
-	std::string& args, std::string& rp_mode, std::string& rp_args)
+int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 {
 	std::string		argument;
-	char			c;
-
-	for ( ; i < mode.size(); i++)
+	
+	switch (mode[i])
 	{
-		c = mode[i];
-		if (c == 'l')
+
+		case 'i':
 		{
-			argument = Libftpp::extractStr(args, " \t\r\n", false);
-			if (argument.empty())
+			setInviteOnly(true);
+			break;
+		}
+		case 't':
+		{
+			setTopicProtection(true);
+			break;
+		}
+		case 'l':
+		{
+			argument = getModeArgument(mode);
+			if (!Libftpp::strIsInt(argument) || argument.empty())
 			{
-				Libftpp::removeChars(rp_mode, &c);
-				continue ;
-			}
-			if (!Libftpp::strIsInt(argument))
-			{
-				// args = argument + " " + args;
-				continue ;
+				//TODO ERROR
 			}
 			setLimit(std::strtod(argument.c_str(), NULL));
-			rp_args.append(argument + " ");
+			break;
 		}
-		else if (c == 'o')
+		case 'o':
 		{
-			argument = Libftpp::extractStr(args, " \t\r\n", false);
+			argument = getModeArgument(mode);
 			if (argument.empty())
 			{
-				Libftpp::removeChars(rp_mode, &c);
-				continue ;
+				// Libftpp::removeChars(mode, &c); TODO ERROR
 			}
-			if (!isMember(argument))
+			else if (!isMember(argument))
 			{
-				Libftpp::removeChars(rp_mode, &c);
 				src.insertOutMessage(\
 					Server::numericMessage(HOSTNAME, ERR_USERNOTINCHANNEL, \
 					src.getNickname() + " " + argument + " " + this->_name, \
 					"They aren't on that channel"));
-				continue ;
 			}
-			this->_members.at(Server::getSockfd(Server::getIndex(argument))).setOperator(true);
-			rp_args.append(argument + " ");
+			else
+				this->_members.at(Server::getSockfd(Server::getIndex(argument))).setOperator(true);
+			break;
 		}
-		else if (c == 'i')
-			setInviteOnly(true);
-		else if (c == 'k')
+		case 'k':
 		{
-			argument = Libftpp::extractStr(args, " \t\r\n", false);
-			Libftpp::trim(argument, " \t\r\n");
+			argument = getModeArgument(mode);
 			if (argument.empty())
 			{
-				Libftpp::removeChars(rp_mode, &c);
-				continue ;
+				// Libftpp::removeChars(mode, &c); TODO ERROR 
 			}
 			setKey(argument);
-			// rp_args.append(argument + " ");
+			break;
 		}
-		else if (c == 't')
-			setTopicProtection(true);
-		else
+		default:
 		{
-			Libftpp::removeChars(rp_mode, &c);
 			src.insertOutMessage( \
 				Server::numericMessage(HOSTNAME, ERR_UNKNOWNMODE, src.getNickname() \
-				+ " " + c, "is unknown mode char to me"));
-			continue ;
+				+ " " + mode[i], "is unknown mode char to me"));
+			return (mode.erase(0, 1), false);
 		}
 	}
-	return (true);
+	argument.insert(0, "+ ");
+	argument.insert(1, mode, i, 1);
+	mode.erase(i, 1);
+	return (informMembers(src.getNickname(), "MODE " + this->_name, argument));
 }
 
 /**
@@ -176,57 +202,65 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode, \
  * @param i actual index in modestring
  * @param src MODE command issuer
  * @param mode the modestring
- * @param args mode arguments
- * @param rp_mode effective modestring holder
- * @param rp_args effective arguments holder
  * @return int 
  */
-int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode, \
-	std::string& args, std::string& rp_mode, std::string& rp_args)
+int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode)
 {
 	std::string		argument;
-	char			c;
 
-	for ( ; i < mode.size(); i++)
+	switch (mode[i])
 	{
-		c = mode[i];
-		if (c == 'l')
-			unsetLimit();
-		else if (c == 'o')
+		case 'l':
 		{
-			argument = Libftpp::extractStr(args, " \t\r\n", false);
+			unsetLimit();
+			break;
+		}
+		case 'o':
+		{
+			argument = getModeArgument(mode);
 			if (argument.empty())
 			{
-				Libftpp::removeChars(rp_mode, &c);
-				continue ;
+				// Libftpp::removeChars(rp_mode, &c);
+				// continue ;
 			}
 			if (!isMember(argument))
 			{
-				Libftpp::removeChars(rp_mode, &c);
 				src.insertOutMessage(\
 					Server::numericMessage(HOSTNAME, ERR_USERNOTINCHANNEL, \
 					src.getNickname() + " " + argument + " " + this->_name, \
 					"They aren't on that channel"));
-				continue ;
 			}
 			this->_members.at(Server::getSockfd(Server::getIndex(argument))).setOperator(false);
-			rp_args.append(argument + " ");
+			break;
 		}
-		else if (c == 'i')
-			unsetInviteOnly();
-		else if (c == 'k')
-			unsetKey();
-		else if (c == 't')
-			unsetTopicProtection();
-		else
+		case 'i':
 		{
-			Libftpp::removeChars(rp_mode, &c);
+			unsetInviteOnly();
+			break;
+		}
+		case 'k':
+		{
+			unsetKey();
+			break;
+		}
+		case 't':
+		{
+			unsetTopicProtection();
+			break;
+		}
+		default:
+		{
 			src.insertOutMessage( \
 				Server::numericMessage(HOSTNAME, ERR_UNKNOWNMODE, src.getNickname() \
 				+ " " + mode[i], "is unknown mode char to me"));
+			return (mode.erase(0, 1), false);
 		}
 	}
-	return (true);
+	argument.insert(0, "- ");
+	argument.insert(1, mode, i, 1);
+	mode.erase(i, 1);
+
+	return (informMembers(src.getNickname(), "MODE " + this->_name, argument));
 }
 
 int		Channel::rpl_channelModeIs(User& _user)

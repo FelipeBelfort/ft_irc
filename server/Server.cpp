@@ -64,8 +64,16 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
 		if (is_connected && _sockets[0].revents & POLLIN)
 			if (!createUser())
 				is_connected = false;
-		if (is_connected && !loopOnUsers())
-			is_connected = false;
+		try
+		{
+			if (is_connected && !loopOnUsers())
+				is_connected = false;
+		}
+		catch(const std::exception& e)
+		{
+		/*DEBUG*/	std::cout << "sockets => |" << _sockets.size() << "| users => |" << _users.size() << "|" << std::endl;
+			std::cout << e.what() << std::endl;
+		}
 	}
 	std::cout << "\nExiting Server..." << std::endl;
 	if (!atExitProcess())
@@ -142,17 +150,17 @@ bool	Server::loopOnUsers()
 	recv_ret = -111;
 	for (size_t i = 1; i < _sockets.size(); )
 	{
-		if (_sockets[i].revents & POLLERR) // TODO verify error cases before
+		if (_sockets[i].revents & POLLERR) // TODO verify error cases before	Conditional jump or move depends on uninitialised value(s)
 			std::cout << "client => " << _sockets[i].fd << " POLLERR " << std::endl;
-		if (_sockets[i].revents & POLLHUP)
+		if (_sockets[i].revents & POLLHUP)									//	Conditional jump or move depends on uninitialised value(s)
 			std::cout << "client => " << _sockets[i].fd << " POLLHUP " << std::endl;
-		if (_sockets[i].revents & POLLERR || _sockets[i].revents & POLLHUP)
+		if (_sockets[i].revents & POLLERR || _sockets[i].revents & POLLHUP)	//	Conditional jump or move depends on uninitialised value(s)
 		{
 			if (!closeClient(i))
 				return (false);
 			continue;
 		}
-		if (_sockets[i].revents & POLLIN)
+		if (_sockets[i].revents & POLLIN)									//	Conditional jump or move depends on uninitialised value(s)
 		{
 			memset(buff, 0, BUFF_SIZE);
 			recv_ret = recv(_sockets[i].fd, buff, BUFF_SIZE - 1, MSG_DONTWAIT);
@@ -183,7 +191,7 @@ bool	Server::loopOnUsers()
 				return (false);
 // std::cerr << ":::::::::::: debugging ::::::::::::: " << '\n';
 		}
-		if (_sockets[i].revents & POLLOUT)
+		if (_sockets[i].revents & POLLOUT)									//	Conditional jump or move depends on uninitialised value(s)
 		{
 			fdbk = _users.at(_sockets[i].fd).routine(i, "");
 			if (fdbk == _fatal)
@@ -222,4 +230,9 @@ int		Server::atExitProcess(void)
 		closeClient(i - 1);
 	_sockets.clear();
 	return (true);
+}
+
+const char*		Server::UserNotFoundException::what(void) const throw()
+{
+	return ("user socket fd not found");
 }

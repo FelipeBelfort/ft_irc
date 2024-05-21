@@ -134,21 +134,22 @@ class Channel
 		std::map<int, Member>		_members;
 		std::set<std::string>		_invited;
 
-		int		isNotMember(const int& sockfd);
-		int		canJoinTheChannel(User* _user, \
+		std::string	getModeArgument(std::string& str);
+		int			isNotMember(const int& sockfd);
+		int			canJoinTheChannel(User* _user, \
 			const std::string& username, const std::string& key);
-		int		syncInsertion(const size_t& id, const Member& new_memb);
-		int		acknowledgementSequence(User* _user, const std::string& username);
-		int		informMembers(const std::string& src, const std::string& cmd, \
+		int			syncInsertion(const size_t& id, const Member& new_memb);
+		int			acknowledgementSequence(User* _user, const std::string& username);
+		int			informMembers(const std::string& src, const std::string& cmd, \
 			const std::string& msg);
-		int		informMembers(const std::string& src, const std::string& cmd);
-		int		kick_op(const std::string& src, const std::string& targ, \
+		int			informMembers(const std::string& src, const std::string& cmd);
+		int			kick_op(const std::string& src, const std::string& targ, \
 			const std::string& comment);
-		int		invite_op(const size_t& index, const std::string& src, const std::string& target);
-		int		applyModes(User& src, std::string& mode, std::string& args);
-		int		setChannelModes(size_t& i, User& src, std::string& mode, std::string& args, std::string& rp_mode, std::string& rp_args);
-		int		removeChannelModes(size_t& i, User& src, std::string& mode, std::string& args, std::string& rp_mode, std::string& rp_args);
-		int		changeTopic(User& src, std::string& topic);
+		int			invite_op(const size_t& index, const std::string& src, const std::string& target);
+		int			applyModes(User& src, std::string& mode);
+		int			setChannelModes(size_t& i, User& src, std::string& mode);
+		int			removeChannelModes(size_t& i, User& src, std::string& mode);
+		int			changeTopic(User& src, std::string& topic);
 };
 
 #endif

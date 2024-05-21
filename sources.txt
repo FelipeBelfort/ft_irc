@@ -1,3 +1,284 @@
 Internet Relay Chat Protocol memo: https://datatracker.ietf.org/doc/html/rfc1459.html#page-13
 https://sites.uclouvain.be/SystInfo/usr/include/bits/poll.h.html
 https://man7.org/linux/man-pages/man3/setsockopt.3p.html
+
+
+bot                                             doing...
+
+inmsg: 'PING LAG1715745247875                   pas de problem, juste debug
+
+le channel se supprime s'il est vide?           OK  OK
+
+password vide?                                  OK  OK
+
+kick marche mais mauvais message                problem with order and message return
+
+invite (try on hexchat)                         OK  
+
+channel limit < 0 marche pas                    OK  OK
+
+no operator problem                             OK -> to test
+
+mode order                                      
+
+"You've invited fbelfort2 to #test:fbelfort2 (localhost)"
+
+members list don't update
+
+/mode +k 
+• fbelfort sets channel keyword to 
+
+
+
+
+Error: getUser() failure: map::at
+Error: in Channel::informMembers(): user lookup failed
+success: onUserRemove() succeeded
+user deleted
+inmsg: 'QUIT :Leaving
+
+
+
+Conditional jump or move depends on uninitialised value(s)
+==57277==    at 0x40629B: Server::loopOnUsers() (Server.cpp:145)
+==57277==    by 0x405703: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:67)
+==57277==    by 0x405386: main (main.cpp:28)
+
+
+
+Conditional jump or move depends on uninitialised value(s)
+==57277==    at 0x484ED28: strlen (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==57277==    by 0x49C13F3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+==57277==    by 0x42EBD5: Channel::applyModes(User&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) (ChannelModeCommand.cpp:81)
+==57277==    by 0x42E021: Channel::mode(unsigned long const&, User&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) (ChannelModeCommand.cpp:50)
+==57277==    by 0x423346: User::channelMode(unsigned long const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) (UserModeCommand.cpp:69)
+==57277==    by 0x4231EB: User::modeCommand(unsigned long const&) (UserModeCommand.cpp:50)
+==57277==    by 0x40FA88: User::parse(unsigned long const&) (User.cpp:182)
+==57277==    by 0x40F165: User::routine(unsigned long const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (User.cpp:54)
+==57277==    by 0x40664A: Server::loopOnUsers() (Server.cpp:174)
+==57277==    by 0x405703: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:67)
+==57277==    by 0x405386: main (main.cpp:28)
+
+
+ Invalid read of size 4
+==57277==    at 0x408764: std::less<int>::operator()(int const&, int const&) const (stl_function.h:408)
+==57277==    by 0x40883B: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, User> >*, std::_Rb_tree_node_base*, int const&) (stl_tree.h:1953)
+==57277==    by 0x4087DD: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_tree.h:1272)
+==57277==    by 0x4086BC: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_map.h:1307)
+==57277==    by 0x406E40: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::at(int const&) (stl_map.h:549)
+==57277==    by 0x408C46: Server::getUser(unsigned long const&) (ServerGettersSetters.cpp:55)
+==57277==    by 0x43223C: Channel::Member::getUser() const (ChannelMember.cpp:50)
+==57277==    by 0x432348: Channel::Member::insertOutMessage(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelMember.cpp:78)
+==57277==    by 0x42712C: Channel::informMembers(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Channel.cpp:92)
+==57277==    by 0x432096: Channel::userForceQuit(int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelOtherTools.cpp:17)
+==57277==    by 0x426004: User::onUserRemove() (UserOtherTools.cpp:29)
+==57277==    by 0x40ECC8: User::~User() (User.cpp:34)
+==57277==  Address 0x4df2970 is 32 bytes inside a block of size 568 free'd
+==57277==    at 0x484B8AF: operator delete(void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==57277==    by 0x4072FC: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (new_allocator.h:158)
+==57277==    by 0x4072C4: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (alloc_traits.h:141)
+==57277==    by 0x407179: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_put_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:567)
+==57277==    by 0x4070BD: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_drop_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:634)
+==57277==    by 0x406FF1: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:1939)
+==57277==    by 0x4089B4: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_tree.h:1256)
+==57277==    by 0x406EE4: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_map.h:1182)
+==57277==    by 0x406926: Server::atExitProcess() (Server.cpp:219)
+==57277==    by 0x405748: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:71)
+==57277==    by 0x405386: main (main.cpp:28)
+==57277==  Block was alloc'd at
+==57277==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==57277==    by 0x40D64F: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::allocate(unsigned long, void const*) (new_allocator.h:137)
+==57277==    by 0x40D5E0: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::allocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, unsigned long) (alloc_traits.h:133)
+==57277==    by 0x40D4C1: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_get_node() (stl_tree.h:563)
+==57277==    by 0x40D47C: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_create_node(std::pair<int const, User> const&) (stl_tree.h:585)
+==57277==    by 0x40D44F: std::_Rb_tree_node<std::pair<int const, User> >* std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node::operator()<std::pair<int const, User> >(std::pair<int const, User> const&) const (stl_tree.h:531)
+==57277==    by 0x40D333: std::_Rb_tree_iterator<std::pair<int const, User> > std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_<std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<int const, User> const&, std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node&) (stl_tree.h:1832)
+==57277==    by 0x40D079: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_unique(std::pair<int const, User> const&) (stl_tree.h:2177)
+==57277==    by 0x40A9AC: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::insert(std::pair<int const, User> const&) (stl_map.h:834)
+==57277==    by 0x40A418: Server::createUser() (ServerOtherTools.cpp:50)
+==57277==    by 0x4056DB: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:65)
+==57277==    by 0x405386: main (main.cpp:28)
+==57277== 
+==57277== Invalid read of size 8
+==57277==    at 0x40707C: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_S_left(std::_Rb_tree_node_base*) (stl_tree.h:782)
+==57277==    by 0x408854: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, User> >*, std::_Rb_tree_node_base*, int const&) (stl_tree.h:1954)
+==57277==    by 0x4087DD: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_tree.h:1272)
+==57277==    by 0x4086BC: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_map.h:1307)
+==57277==    by 0x406E40: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::at(int const&) (stl_map.h:549)
+==57277==    by 0x408C46: Server::ge    unsigned long const&) (ServerGettersSetters.cpp:55)
+==57277==    by 0x43223C: Channel::Member::getUser() const (ChannelMember.cpp:50)
+==57277==    by 0x432348: Channel::Member::insertOutMessage(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelMember.cpp:78)
+==57277==    by 0x42712C: Channel::informMembers(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Channel.cpp:92)
+==57277==    by 0x432096: Channel::userForceQuit(int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelOtherTools.cpp:17)
+==57277==    by 0x426004: User::onUserRemove() (UserOtherTools.cpp:29)
+==57277==    by 0x40ECC8: User::~User() (User.cpp:34)
+==57277==  Address 0x4df2960 is 16 bytes inside a block of size 568 free'd
+==57277==    at 0x484B8AF: operator delete(void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==57277==    by 0x4072FC: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (new_allocator.h:158)
+==57277==    by 0x4072C4: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (alloc_traits.h:141)
+==57277==    by 0x407179: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_put_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:567)
+==57277==    by 0x4070BD: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_drop_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:634)
+==57277==    by 0x406FF1: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:1939)
+==57277==    by 0x4089B4: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_tree.h:1256)
+==57277==    by 0x406EE4: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_map.h:1182)
+==57277==    by 0x406926: Server::atExitProcess() (Server.cpp:219)
+==57277==    by 0x405748: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:71)
+==57277==    by 0x405386: main (main.cpp:28)
+==57277==  Block was alloc'd at
+==57277==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==57277==    by 0x40D64F: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::allocate(unsigned long, void const*) (new_allocator.h:137)
+==57277==    by 0x40D5E0: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::allocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, unsigned long) (alloc_traits.h:133)
+==57277==    by 0x40D4C1: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_get_node() (stl_tree.h:563)
+==57277==    by 0x40D47C: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_create_node(std::pair<int const, User> const&) (stl_tree.h:585)
+==57277==    by 0x40D44F: std::_Rb_tree_node<std::pair<int const, User> >* std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node::operator()<std::pair<int const, User> >(std::pair<int const, User> const&) const (stl_tree.h:531)
+==57277==    by 0x40D333: std::_Rb_tree_iterator<std::pair<int const, User> > std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_<std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<int const, User> const&, std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node&) (stl_tree.h:1832)
+==57277==    by 0x40D079: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_unique(std::pair<int const, User> const&) (stl_tree.h:2177)
+==57277==    by 0x40A9AC: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::insert(std::pair<int const, User> const&) (stl_map.h:834)
+==57277==    by 0x40A418: Server::createUser() (ServerOtherTools.cpp:50)
+==57277==    by 0x4056DB: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:65)
+==57277==    by 0x405386: main (main.cpp:28)
+
+
+==1033827== Conditional jump or move depends on uninitialised value(s)
+==1033827==    at 0x406587: Server::loopOnUsers() (Server.cpp:188)
+==1033827==    by 0x40552A: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:68)
+==1033827==    by 0x432C16: main (main.cpp:28)
+
+
+Conditional jump or move depends on uninitialised value(s)
+==26954==    at 0x4068F7: Server::loopOnUsers() (Server.cpp:194)
+==26954==    by 0x405716: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:69)
+==26954==    by 0x405396: main (main.cpp:28)
+==26954==  Uninitialised value was created by a stack allocation
+==26954==    at 0x40A690: Server::createUser() (ServerOtherTools.cpp:42)
+
+
+
+
+
+
+
+
+
+
+
+
+
+Exiting Server...
+success: onUserRemove() succeeded
+success: onUserRemove() succeeded
+==28425== Invalid read of size 4
+==28425==    at 0x4089B4: std::less<int>::operator()(int const&, int const&) const (stl_function.h:408)
+==28425==    by 0x408A8B: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, User> >*, std::_Rb_tree_node_base*, int const&) (stl_tree.h:1953)
+==28425==    by 0x408A2D: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_tree.h:1272)
+==28425==    by 0x40890C: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_map.h:1307)
+==28425==    by 0x407020: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::at(int const&) (stl_map.h:549)
+==28425==    by 0x408E96: Server::getUser(unsigned long const&) (ServerGettersSetters.cpp:57)
+==28425==    by 0x432B9C: Channel::Member::getUser() const (ChannelMember.cpp:50)
+==28425==    by 0x432CF8: Channel::Member::insertOutMessage(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelMember.cpp:83)
+==28425==    by 0x42759C: Channel::informMembers(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Channel.cpp:92)
+==28425==    by 0x432986: Channel::userForceQuit(int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelOtherTools.cpp:17)
+==28425==    by 0x426474: User::onUserRemove() (UserOtherTools.cpp:29)
+==28425==    by 0x40F078: User::~User() (User.cpp:34)
+==28425==  Address 0x4df4ac0 is 32 bytes inside a block of size 568 free'd
+==28425==    at 0x484B8AF: operator delete(void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==28425==    by 0x40752C: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (new_allocator.h:158)
+==28425==    by 0x4074F4: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (alloc_traits.h:141)
+==28425==    by 0x4073A9: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_put_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:567)
+==28425==    by 0x4072ED: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_drop_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:634)
+==28425==    by 0x407221: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:1939)
+==28425==    by 0x408C04: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_tree.h:1256)
+==28425==    by 0x4070C4: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_map.h:1182)
+==28425==    by 0x406AC6: Server::atExitProcess() (Server.cpp:227)
+==28425==    by 0x4058E4: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:79)
+==28425==    by 0x405396: main (main.cpp:28)
+==28425==  Block was alloc'd at
+==28425==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==28425==    by 0x40DA1F: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::allocate(unsigned long, void const*) (new_allocator.h:137)
+==28425==    by 0x40D9B0: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::allocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, unsigned long) (alloc_traits.h:133)
+==28425==    by 0x40D891: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_get_node() (stl_tree.h:563)
+==28425==    by 0x40D84C: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_create_node(std::pair<int const, User> const&) (stl_tree.h:585)
+==28425==    by 0x40D81F: std::_Rb_tree_node<std::pair<int const, User> >* std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node::operator()<std::pair<int const, User> >(std::pair<int const, User> const&) const (stl_tree.h:531)
+==28425==    by 0x40D703: std::_Rb_tree_iterator<std::pair<int const, User> > std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_<std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<int const, User> const&, std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node&) (stl_tree.h:1832)
+==28425==    by 0x40D449: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_unique(std::pair<int const, User> const&) (stl_tree.h:2177)
+==28425==    by 0x40AD7C: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::insert(std::pair<int const, User> const&) (stl_map.h:834)
+==28425==    by 0x40A7E8: Server::createUser() (ServerOtherTools.cpp:50)
+==28425==    by 0x4056EE: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:65)
+==28425==    by 0x405396: main (main.cpp:28)
+==28425== 
+==28425== Invalid read of size 8
+==28425==    at 0x4072AC: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_S_left(std::_Rb_tree_node_base*) (stl_tree.h:782)
+==28425==    by 0x408AA4: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, User> >*, std::_Rb_tree_node_base*, int const&) (stl_tree.h:1954)
+==28425==    by 0x408A2D: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_tree.h:1272)
+==28425==    by 0x40890C: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::lower_bound(int const&) (stl_map.h:1307)
+==28425==    by 0x407020: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::at(int const&) (stl_map.h:549)
+==28425==    by 0x408E96: Server::getUser(unsigned long const&) (ServerGettersSetters.cpp:57)
+==28425==    by 0x432B9C: Channel::Member::getUser() const (ChannelMember.cpp:50)
+==28425==    by 0x432CF8: Channel::Member::insertOutMessage(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelMember.cpp:83)
+==28425==    by 0x42759C: Channel::informMembers(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Channel.cpp:92)
+==28425==    by 0x432986: Channel::userForceQuit(int const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (ChannelOtherTools.cpp:17)
+==28425==    by 0x426474: User::onUserRemove() (UserOtherTools.cpp:29)
+==28425==    by 0x40F078: User::~User() (User.cpp:34)
+==28425==  Address 0x4df4ab0 is 16 bytes inside a block of size 568 free'd
+==28425==    at 0x484B8AF: operator delete(void*) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==28425==    by 0x40752C: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (new_allocator.h:158)
+==28425==    by 0x4074F4: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::deallocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, std::_Rb_tree_node<std::pair<int const, User> >*, unsigned long) (alloc_traits.h:141)
+==28425==    by 0x4073A9: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_put_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:567)
+==28425==    by 0x4072ED: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_drop_node(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:634)
+==28425==    by 0x407221: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_erase(std::_Rb_tree_node<std::pair<int const, User> >*) (stl_tree.h:1939)
+==28425==    by 0x408C04: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_tree.h:1256)
+==28425==    by 0x4070C4: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::clear() (stl_map.h:1182)
+==28425==    by 0x406AC6: Server::atExitProcess() (Server.cpp:227)
+==28425==    by 0x4058E4: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:79)
+==28425==    by 0x405396: main (main.cpp:28)
+==28425==  Block was alloc'd at
+==28425==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==28425==    by 0x40DA1F: std::__new_allocator<std::_Rb_tree_node<std::pair<int const, User> > >::allocate(unsigned long, void const*) (new_allocator.h:137)
+==28425==    by 0x40D9B0: __gnu_cxx::__alloc_traits<std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >, std::_Rb_tree_node<std::pair<int const, User> > >::allocate(std::allocator<std::_Rb_tree_node<std::pair<int const, User> > >&, unsigned long) (alloc_traits.h:133)
+==28425==    by 0x40D891: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_get_node() (stl_tree.h:563)
+==28425==    by 0x40D84C: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_create_node(std::pair<int const, User> const&) (stl_tree.h:585)
+==28425==    by 0x40D81F: std::_Rb_tree_node<std::pair<int const, User> >* std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node::operator()<std::pair<int const, User> >(std::pair<int const, User> const&) const (stl_tree.h:531)
+==28425==    by 0x40D703: std::_Rb_tree_iterator<std::pair<int const, User> > std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_<std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<int const, User> const&, std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_Alloc_node&) (stl_tree.h:1832)
+==28425==    by 0x40D449: std::_Rb_tree<int, std::pair<int const, User>, std::_Select1st<std::pair<int const, User> >, std::less<int>, std::allocator<std::pair<int const, User> > >::_M_insert_unique(std::pair<int const, User> const&) (stl_tree.h:2177)
+==28425==    by 0x40AD7C: std::map<int, User, std::less<int>, std::allocator<std::pair<int const, User> > >::insert(std::pair<int const, User> const&) (stl_map.h:834)
+==28425==    by 0x40A7E8: Server::createUser() (ServerOtherTools.cpp:50)
+==28425==    by 0x4056EE: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:65)
+==28425==    by 0x405396: main (main.cpp:28)
+
+
+
+
+
+
+inmsg: 'MODE #test +kilt bla         5
+'
+before i => |1| src => |fbelfort| mode => |+kilt bla         5| mode[i] => |k| args => || rp_mode => |+kilt bla         5| rp_args => ||
+test bolado antes ****** argument => || mode => |+kilt bla         5|
+test bolado depois ****** argument => |bla| mode => |+kilt 5|
+
+before set i => |1| src => |fbelfort| mode => |+kilt 5| mode[i] => |k| args => || rp_mode => |+kilt 5| rp_args => || argument => |bla|
+after set i => |1| src => |fbelfort| mode => |+kilt 5| mode[i] => |k| args => || rp_mode => |+kilt 5| rp_args => || argument => |bla|
+before i => |0| src => |fbelfort| mode => |ilt 5| mode[i] => |i| args => || rp_mode => |+kilt 5| rp_args => ||
+==49763== Invalid read of size 1
+==49763==    at 0x42F4B9: Channel::applyModes(User&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) (ChannelModeCommand.cpp:79)
+==49763==    by 0x42E76B: Channel::mode(unsigned long const&, User&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) (ChannelModeCommand.cpp:51)
+==49763==    by 0x4237C6: User::channelMode(unsigned long const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) (UserModeCommand.cpp:69)
+==49763==    by 0x42366B: User::modeCommand(unsigned long const&) (UserModeCommand.cpp:50)
+==49763==    by 0x40FE48: User::parse(unsigned long const&) (User.cpp:211)
+==49763==    by 0x40F525: User::routine(unsigned long const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (User.cpp:55)
+==49763==    by 0x4067FA: Server::loopOnUsers() (Server.cpp:182)
+==49763==    by 0x405726: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:69)
+==49763==    by 0x4053A6: main (main.cpp:28)
+==49763==  Address 0x4df330f is 1 bytes before a block of size 31 alloc'd
+==49763==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==49763==    by 0x49BDFEE: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_assign(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+==49763==    by 0x49BE4AC: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::operator=(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+==49763==    by 0x423194: User::modeCommand(unsigned long const&) (UserModeCommand.cpp:41)
+==49763==    by 0x40FE48: User::parse(unsigned long const&) (User.cpp:211)
+==49763==    by 0x40F525: User::routine(unsigned long const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (User.cpp:55)
+==49763==    by 0x4067FA: Server::loopOnUsers() (Server.cpp:182)
+==49763==    by 0x405726: Server::launchServer(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Server.cpp:69)
+==49763==    by 0x4053A6: main (main.cpp:28)
+==49763== 
+test bolado antes ****** argument => || mode => |ilt 5|
+test bolado depois ****** argument => |5| mode => |ilt |

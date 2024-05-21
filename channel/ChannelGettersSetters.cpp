@@ -209,11 +209,6 @@ void				Channel::rmFromInvitedList(const std::string& username)
 	this->_invited.erase(Libftpp::strToLower(username));
 }
 
-size_t			Channel::getNbOfMembers(void) const
-{
-	return (this->_members.size());
-}
-
 size_t			Channel::getNbOfOperators(void) const
 {
 	size_t	ops = 0;
@@ -252,6 +247,6 @@ void				Channel::setNewOperator(void)
 	{
 		int	new_op_fd = this->getOldestMember();
 		this->_members.at(new_op_fd).setOperator(true);
-		this->informMembers(Server::sourcename, "MODE " + this->_name, "+o " + this->_members.at(new_op_fd).getName());
+		this->informMembers(HOSTNAME, "MODE " + this->_name, "+o " + this->_members.at(new_op_fd).getName());
 	}
 }

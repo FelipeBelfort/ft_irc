@@ -55,7 +55,12 @@ User&		Channel::Member::getUser(void) const
 
 const std::string&	Channel::Member::getName(void) const
 {
-	return (Server::getUser(this->_index)->getNickname());
+	User*	_user;
+
+	_user = Server::getUser(this->_index);
+	if (!_user)
+		throw(UserNotFoundException());
+	return (_user->getNickname());
 }
 
 bool				Channel::Member::isOperator(void) const
