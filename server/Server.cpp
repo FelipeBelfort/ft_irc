@@ -71,7 +71,7 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
 		}
 		catch(const std::exception& e)
 		{
-		/*DEBUG*/	std::cout << "sockets => |" << _sockets.size() << "| users => |" << _users.size() << "|" << std::endl;
+/*DEBUG*/	std::cout << "sockets => |" << _sockets.size() << "| users => |" << _users.size() << "|" << std::endl;
 			std::cout << e.what() << std::endl;
 		}
 	}
@@ -150,26 +150,28 @@ bool	Server::loopOnUsers()
 	recv_ret = -111;
 	for (size_t i = 1; i < _sockets.size(); )
 	{
-		if (_sockets[i].revents & POLLERR) // TODO verify error cases before	Conditional jump or move depends on uninitialised value(s)
+		short	revents = getSockrevents(i);
+
+		if (revents & POLLERR) // TODO verify error cases before		Conditional jump or move depends on uninitialised value(s)
 			std::cout << "client => " << _sockets[i].fd << " POLLERR " << std::endl;
-		if (_sockets[i].revents & POLLHUP)									//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLHUP)										//	Conditional jump or move depends on uninitialised value(s)
 			std::cout << "client => " << _sockets[i].fd << " POLLHUP " << std::endl;
-		if (_sockets[i].revents & POLLERR || _sockets[i].revents & POLLHUP)	//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLERR || revents & POLLHUP)					//	Conditional jump or move depends on uninitialised value(s)
 		{
 			if (!closeClient(i))
 				return (false);
 			continue;
 		}
-		if (_sockets[i].revents & POLLIN)									//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLIN)										//	Conditional jump or move depends on uninitialised value(s)
 		{
 			memset(buff, 0, BUFF_SIZE);
 			recv_ret = recv(_sockets[i].fd, buff, BUFF_SIZE - 1, MSG_DONTWAIT);
-			if (recv_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
-			{
-				i++;
-				continue;
-			}
-			else if (recv_ret < 0)
+			// if (recv_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))		// forbiden
+			// {
+			// 	i++;
+			// 	continue;
+			// }
+			if (recv_ret < 0)
 				return (Libftpp::ft_perror("recv()"));
 			else if (!recv_ret)
 			{
@@ -191,7 +193,7 @@ bool	Server::loopOnUsers()
 				return (false);
 // std::cerr << ":::::::::::: debugging ::::::::::::: " << '\n';
 		}
-		if (_sockets[i].revents & POLLOUT)									//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLOUT)										//	Conditional jump or move depends on uninitialised value(s)
 		{
 			fdbk = _users.at(_sockets[i].fd).routine(i, "");
 			if (fdbk == _fatal)
@@ -207,6 +209,7 @@ std::cout << "user deleted"<< std::endl;
 		_sockets[i].revents = 0;
 		i++;
 	}
+	updateChannels();
 	return (true);
 }
 
@@ -224,11 +227,12 @@ void	exitServer(int sign)
 
 int		Server::atExitProcess(void)
 {
-	_users.clear();
-	channels.clear();
 	for (size_t i = _sockets.size(); i > 0; i = _sockets.size())
 		closeClient(i - 1);
-	_sockets.clear();
+	// _users.clear();
+	// _sockets.clear();
+	channels.clear();
+/*DEBUG*/std::cout << "users => |" << _users.size() << "| sockets => |" << _sockets.size() << "| channels => |" << channels.size() << "|" << std::endl;
 	return (true);
 }
 

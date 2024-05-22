@@ -82,6 +82,13 @@ int		Channel::applyModes(User& src, std::string& mode)
 {
 	char			sign = 0;
 
+	if (mode.find_first_of("+-") != 0 || mode.find_first_of("itkol") != 1)
+	{
+		src.insertOutMessage( \
+				Server::numericMessage(HOSTNAME, ERR_UNKNOWNMODE, src.getNickname() \
+				+ " " + mode[1], "is unknown mode char to me"));
+		return (_ignore);
+	}
 	for (size_t i = mode.find_first_not_of("+-"); i < mode.size(); i = mode.find_first_not_of("+-"))
 	{
 		if (mode[i - 1] && (mode[i - 1] == '+' || mode[i - 1] == '-'))
@@ -147,9 +154,19 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 		case 'l':
 		{
 			argument = getModeArgument(mode);
-			if (!Libftpp::strIsInt(argument) || argument.empty())
+			if (argument.empty())
 			{
-				//TODO ERROR
+				src.insertOutMessage( \
+					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
+					this->getName() + " MODE " + mode[i], "Not enough parameters"));
+				return (mode.erase(0, 1), false);
+			}
+			if (!Libftpp::strIsInt(argument))
+			{
+				src.insertOutMessage( \
+					Server::numericMessage(HOSTNAME, ERR_UMODEUNKNOWNFLAG, \
+					this->getName() + " MODE " + mode[i], "Unknown MODE flag"));
+				return (mode.erase(0, 1), false);
 			}
 			setLimit(std::strtod(argument.c_str(), NULL));
 			break;
@@ -159,7 +176,10 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 			argument = getModeArgument(mode);
 			if (argument.empty())
 			{
-				// Libftpp::removeChars(mode, &c); TODO ERROR
+				src.insertOutMessage( \
+					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
+					this->getName() + " MODE " + mode[i], "Not enough parameters"));
+				return (mode.erase(0, 1), false);
 			}
 			else if (!isMember(argument))
 			{
@@ -177,7 +197,10 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 			argument = getModeArgument(mode);
 			if (argument.empty())
 			{
-				// Libftpp::removeChars(mode, &c); TODO ERROR 
+				src.insertOutMessage( \
+					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
+					this->getName() + " MODE " + mode[i], "Not enough parameters"));
+				return (mode.erase(0, 1), false); 
 			}
 			setKey(argument);
 			break;
@@ -220,8 +243,10 @@ int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode)
 			argument = getModeArgument(mode);
 			if (argument.empty())
 			{
-				// Libftpp::removeChars(rp_mode, &c);
-				// continue ;
+				src.insertOutMessage( \
+					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
+					this->getName() + " MODE " + mode[i], "Not enough parameters"));
+				return (mode.erase(0, 1), false);
 			}
 			if (!isMember(argument))
 			{
@@ -229,6 +254,7 @@ int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode)
 					Server::numericMessage(HOSTNAME, ERR_USERNOTINCHANNEL, \
 					src.getNickname() + " " + argument + " " + this->_name, \
 					"They aren't on that channel"));
+				return (mode.erase(0, 1), false);
 			}
 			this->_members.at(Server::getSockfd(Server::getIndex(argument))).setOperator(false);
 			break;

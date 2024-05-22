@@ -48,7 +48,7 @@ int		User::kickCommand(const size_t& index)
 		return (_ignore);
 	}
 	if (comment.empty())
-		comment.assign("Unkown user");
+		comment.assign("Unkown reason");
 	fdbk = tryKick(index, chann, targets, comment);
 	return (fdbk);
 }

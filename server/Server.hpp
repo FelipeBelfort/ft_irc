@@ -104,6 +104,7 @@ class Server
 		static bool					createUser(void);
 		static bool					closeClient(size_t index);
 		static bool					loopOnUsers(void);
+		static void					updateChannels(void);
 
 };
 

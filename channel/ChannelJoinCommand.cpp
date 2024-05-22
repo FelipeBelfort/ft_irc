@@ -140,7 +140,7 @@ int		Channel::syncInsertion(const size_t& id, const Member& new_memb)
  */
 int		Channel::acknowledgementSequence(User* _user, const std::string& username)
 {
-	informMembers(username, "JOIN", this->_name);
+	this->informMembers(username, "JOIN", this->_name);
 	rpl_topic(*_user);
 	// if (topicIsSet())
 	// {

@@ -49,7 +49,10 @@ User&		Channel::Member::getUser(void) const
 	_user = NULL;
 	_user = Server::getUser(this->_index);
 	if (!_user)
+	{
+/*DEBUG*/	std::cout << "Erro no index => |" << this->getIndex() << "| fd => |" << this->getSock_fd() <<  "|" << std::endl;
 		throw(UserNotFoundException());
+	}
 	return (*_user);
 }
 
@@ -80,7 +83,11 @@ void				Channel::Member::setOperator(bool b)
 
 void				Channel::Member::insertOutMessage(const std::string& msg)
 {
-	getUser().insertOutMessage(msg);
+	User*	user;
+
+	user = &this->getUser();
+	if (user)
+		user->insertOutMessage(msg);
 }
 
 const std::time_t&		Channel::Member::getTimestamp(void) const

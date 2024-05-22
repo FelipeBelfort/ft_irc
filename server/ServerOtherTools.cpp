@@ -22,12 +22,13 @@
  */
 bool	Server::closeClient(size_t index)
 {
-	_users.erase(_sockets[index].fd);
 	if (_sockets[index].fd >= 0)
 	{
 		if (close(_sockets[index].fd) < 0)
 			return (Libftpp::ft_perror("close()"));
 	}
+	if (index)
+		_users.erase(_sockets[index].fd);
 	_sockets.erase(_sockets.begin() + index);
 	return (true);
 }
@@ -46,6 +47,7 @@ bool	Server::createUser(void)
 	if (user_socket.fd == -1)
 		return (Libftpp::ft_perror("accept()"));
 	user_socket.events = POLLIN | POLLOUT;
+	user_socket.revents = 0;
 	_sockets.push_back(user_socket);
 	_users.insert(std::pair<int, User>( \
 		user_socket.fd, User(user_socket.fd)));
@@ -123,4 +125,17 @@ int				Server::removeChannel(const std::string& chann_name)
 {
 	channels.erase(Libftpp::strToLower(chann_name));
 	return (true);
+}
+
+void			Server::updateChannels(void)
+{
+	for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); )
+	{
+		std::map<std::string, Channel>::iterator tmp = it++;
+		if ((*tmp).second.getNbOfMembers())
+			(*tmp).second.setNewOperator();
+		else
+			removeChannel((*tmp).first);
+	}
+	
 }

@@ -245,8 +245,16 @@ void				Channel::setNewOperator(void)
 {
 	if (!this->getNbOfOperators() && this->getNbOfMembers())
 	{
+		std::map<int, Member>::iterator	it;
+
 		int	new_op_fd = this->getOldestMember();
-		this->_members.at(new_op_fd).setOperator(true);
-		this->informMembers(HOSTNAME, "MODE " + this->_name, "+o " + this->_members.at(new_op_fd).getName());
+		it = this->_members.find(new_op_fd);
+		if (it != this->_members.end())
+		{
+			(*it).second.setOperator(true);
+			// this->informMembers(HOSTNAME, "MODE " + this->_name, "+o " + this->_members.at(new_op_fd).getName());
+			this->informMembers(HOSTNAME, "MODE " + this->_name, "+o " + (*it).second.getName());
+
+		}
 	}
 }

@@ -24,6 +24,7 @@ std::string		Server::serverMessage(std::string src, \
 	line = ":" + src + " " + cmd + "\r\n";
 	return (line);
 }
+
 std::string		Server::serverMessage(std::string src, \
 	std::string cmd, std::string msg)
 {
@@ -38,6 +39,7 @@ std::string		Server::serverMessage(std::string src, \
 	line = ":" + src + " " + cmd + " :" + msg + "\r\n";
 	return (line);
 }
+
 std::string		Server::numericMessage(std::string src, \
 	std::string num, std::string target, std::string msg)
 {

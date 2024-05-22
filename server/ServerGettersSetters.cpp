@@ -54,13 +54,16 @@ User* 	Server::getUser(const size_t& index)
 	ptr = NULL;
 	try
 	{
-		ptr = &_users.at(getSockfd(index));
-		return (ptr);
+		std::map<int, User>::iterator it = _users.find(getSockfd(index));
+		if (it != _users.end())
+			return (&(*it).second);
+// /*DEBUG*/std::cout << "passei aqui |" << _users.at(getSockfd(index)).getNickname() << "|" << std::endl;
+// 		ptr = &_users.at(getSockfd(index));
+// 		return (ptr);
 	}
 	catch(const std::exception& e)
 	{
 		std::cerr << "Error: getUser() failure: " << e.what() << '\n';
-		return (NULL);
 	}
 	return (NULL);
 }

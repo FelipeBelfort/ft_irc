@@ -72,9 +72,10 @@ int		Channel::kick_op(const std::string& src, const std::string& targ, \
 	{
 		if ((*it).second.getName() == Libftpp::strToLower(targ))
 		{
+			int	fdbk = informMembers(src, "KICK " + this->_name + " " + targ, comment);
 			(*it).second.getUser().disjoinChannel(this->_name);
 			this->_members.erase((*it).first);
-			if (!informMembers(src, "KICK " + this->_name + " " + targ, comment))
+			if (!fdbk)
 				return (false);
 			return (true);
 		}

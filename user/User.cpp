@@ -70,34 +70,6 @@ int		User::routine(const size_t& index, std::string buff)
 // /*DEBUG*/std::cerr << "*** debugging *** fdbk = " + Libftpp::itoa(fdbk) << '\n';
 	return (fdbk);
 }
-// int		User::routine(const size_t& index, std::string buff)
-// {
-// 	int		fdbk;
-
-// 	fdbk = true;
-// 	this->_inmsg += buff;
-// 	if (this->_inmsg.find_first_of('\n') != this->_inmsg.npos)
-// 	{
-// /*DEBUG*/std::cout << "inmsg: '" + this->_inmsg << "'" << std::endl;
-// 		fdbk = parse(index);
-// 		if (!fdbk)
-// 			return (fdbk);
-// 		//parsing
-// 	}
-// 	// else
-// 	// 	return (true); //TODO review the if/else
-	
-// 	if (!Server::broadcastMsg.empty())
-// 		Server::broadcasting();
-// 	if (!this->_outmsg.empty() && (Server::getSockrevents(index) & POLLOUT))
-// 	{
-// 		if (!transmitMessage(index))
-// 			return (false);
-// 	}
-// // /*DEBUG*/std::cerr << "*** debugging *** fdbk = " + Libftpp::itoa(fdbk) << '\n';
-// 	return (fdbk);
-// }
-
 
 /**
  * @brief transmits the messages inserted in 'outmsg' 
