@@ -71,7 +71,7 @@ bool	Server::isValidNick(const std::string &nick)
 	int		fdbk;
 
 	fdbk = true;
-	if (nick.empty())
+	if (nick.empty() || nick == BOT_NAME)
 		return (false);
 	fdbk = nick.find_first_of(" ,*?!@.#&$:") == std::string::npos && nick.find_first_of("#&$:") != 0;
 	fdbk &= !std::isdigit(nick[0]);

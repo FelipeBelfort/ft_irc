@@ -37,6 +37,7 @@
 # define MAX_PORT 65535
 # define BUFF_SIZE 42
 # define MAX_CONNECTIONS 20
+# define BOT_NAME "bot"
 
 class User;
 class Channel;
@@ -76,6 +77,8 @@ class Server
 		static size_t				getNbOfChannels(void);
 		static const std::string	getMsgOfTheDay(void);
 		static int					removeChannel(const std::string& chann_name);
+		static void    				botSayHello(User& user);
+		static bool					botInteraction(User& user, const std::string& msg);
 
 		static int					atExitProcess(void);
 

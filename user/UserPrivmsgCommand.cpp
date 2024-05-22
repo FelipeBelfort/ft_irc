@@ -133,6 +133,8 @@ int		User::tryTargetAsUser(std::string& targ, const std::string& msg)
 {
 	User*	_user;
 
+	if (targ == BOT_NAME)
+		return (Server::botInteraction(*this, msg));
 	for (size_t i = 1; i < Server::getSocketsSize(); i++)
 	{
 		_user = NULL;

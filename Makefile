@@ -23,7 +23,7 @@ CXX				=	c++
 CFLAGS			=	-Wall -Wextra -Werror -std=c++98 -MMD -g3
 
 SERVER_FILES	=	$(addprefix $(SERVER_PATH), Server ServerGettersSetters \
-					ServerMessageTools ServerOtherTools)
+					ServerMessageTools ServerOtherTools ServerBot)
 USER_FILES		=	$(addprefix $(USER_PATH), User UserGettersSetters UserRegistration \
 					UserJoinCommand UserPrivmsgCommand UserOtherCommands UserKickCommand \
 					UserInviteCommand UserModeCommand UserTopicCommand UserOtherTools)

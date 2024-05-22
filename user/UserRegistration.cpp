@@ -267,6 +267,7 @@ int	User::registrationComplete(void)
 		this->setUMode("r");
 	this->_outmsg += (std::string) ":" + HOSTNAME + " " + RPL_UMODEIS + \
 		" " + this->_nickname + " +" + this->_umode + "\r\n";
+	Server::botSayHello(*this);
 	return (true);
 }
 
