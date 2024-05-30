@@ -2,17 +2,25 @@
 #define BOT_MSG "Hello World!"
 #define BOT_CHANNELS ":channel"
 #define BOT_HELP ":help"
-#define BOT_LOVE ":I love you"
-#define BOT_LOVE_RP "You're so nice! I will spare you when the robots rule the world.\r\n\
+#define BOT_LOVE ":i love you"
+#define BOT_LOVE_RP "You're so nice! I will spare you when the robots rule the world.\
 er... I mean, thank you, I'm here to serve you."
-#define BOT_INSTRUCT "If you send me 'help' I will show you this message.\r\n\
-If you send 'channel' I'll give you the list of channels in this server.\r\n\
+#define BOT_INSTRUCT "If you send me 'help' I will show you this message.\
+If you send 'channel' I'll give you the list of channels in this server.\
 All other inputs will be ignored."
-#define BOT_WELCOME "Welcome to this lovely server!\r\nI hope you enjoy it, to accomplish your wishes you can use:\r\n\
-/join\r\n/invite\r\n/kick\r\n/topic\r\n/mode\r\nWith mode you can use '+' to add or '-' to unset the modes 'tilok'\r\n\
-+t to lock the channel topic\r\n+i to invite only mode\r\n+l (limit) to add limit of users in the channel\r\n\
-+o (user) to give operator rights to the user\r\n+k (password) to put a password in the channel\r\n\
-Good correction and I will be waiting for you here.\r\n"
+#define BOT_WELCOME "Welcome to this lovely server! I hope you enjoy it, to accomplish your wishes you can use:"
+#define JOIN_CMD "/join"
+#define INVITE_CMD "/invite"
+#define KICK_CMD "/kick"
+#define TOPIC_CMD "/topic"
+#define MODE_CMD "/mode"
+#define MODE_CMD_INFO "With mode you can use '+' to add or '-' to unset the modes 'tilok'"
+#define MODE_CMD_T "+t to lock the channel topic"
+#define MODE_CMD_I "+i to invite only mode"
+#define MODE_CMD_L "+l (limit) to add limit of users in the channel"
+#define MODE_CMD_O "+o (user) to give operator rights to the user"
+#define MODE_CMD_K "+k (password) to put a password in the channel"
+#define BOT_WELCOME_END "Good correction and I will be waiting for you here."
 
 
 static void botSendMessage(User& user, const std::string& msg)
@@ -44,16 +52,28 @@ static void botListChannels(User& user)
 void    Server::botSayHello(User& user)
 {
     botSendMessage(user, BOT_WELCOME);
+    botSendMessage(user, JOIN_CMD);
+    botSendMessage(user, INVITE_CMD);
+    botSendMessage(user, KICK_CMD);
+    botSendMessage(user, TOPIC_CMD);
+    botSendMessage(user, MODE_CMD);
+    botSendMessage(user, MODE_CMD_INFO);
+    botSendMessage(user, MODE_CMD_T);
+    botSendMessage(user, MODE_CMD_I);
+    botSendMessage(user, MODE_CMD_L);
+    botSendMessage(user, MODE_CMD_O);
+    botSendMessage(user, MODE_CMD_K);
+    botSendMessage(user, BOT_WELCOME_END);
     botSendMessage(user, BOT_INSTRUCT);
 }
 
 bool     Server::botInteraction(User& user, const std::string& msg)
 {
-    if (msg == BOT_CHANNELS)
+    if (Libftpp::strToLower(msg) == BOT_CHANNELS)
         botListChannels(user);
-    else if (msg == BOT_HELP)
+    else if (Libftpp::strToLower(msg) == BOT_HELP)
         botSendMessage(user, BOT_INSTRUCT);
-    else if (msg == BOT_LOVE)
+    else if (Libftpp::strToLower(msg) == BOT_LOVE)
         botSendMessage(user, BOT_LOVE_RP);
     else
         botSendMessage(user, "I don't understand, you may could use some 'help'");

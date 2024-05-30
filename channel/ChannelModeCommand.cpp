@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ChannelModeCommand.cpp                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 18:23:57 by jm                #+#    #+#             */
-/*   Updated: 2024/05/10 18:26:33 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/30 15:11:54 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int		Channel::mode(const size_t& index, User& src, std::string& mode)
  */
 int		Channel::applyModes(User& src, std::string& mode)
 {
-	char			sign = 0;
+	char		sign = 0;
 
 	if (mode.find_first_of("+-") != 0 || mode.find_first_of("itkol") != 1)
 	{
@@ -91,15 +91,22 @@ int		Channel::applyModes(User& src, std::string& mode)
 	}
 	for (size_t i = mode.find_first_not_of("+-"); i < mode.size(); i = mode.find_first_not_of("+-"))
 	{
+		std::cout << "mode => |" << mode << "| char => |" << mode[i] << "|" << std::endl;
 		if (mode[i - 1] && (mode[i - 1] == '+' || mode[i - 1] == '-'))
 			sign = mode[i - 1];
-		if (sign == '+')
+		if (mode[i] == ' ' || !sign)
+			return (true);
+		else if (sign == '+')
+		{
 			setChannelModes(i, src, mode);
+			continue;
+		}
 		else if (sign == '-')
+		{
 			removeChannelModes(i, src, mode);
-		else if (!sign)
-			mode.erase(0, 1);
-		Libftpp::trim(mode, " \t\r\n");
+			continue;
+		}
+		Libftpp::trim(mode, "\t\r\n");
 	}
 	return (true);
 }
@@ -159,14 +166,15 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 				src.insertOutMessage( \
 					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
 					this->getName() + " MODE " + mode[i], "Not enough parameters"));
-				return (mode.erase(0, 1), false);
+				return (mode.erase(i, 1), false);
 			}
 			if (!Libftpp::strIsInt(argument))
 			{
 				src.insertOutMessage( \
-					Server::numericMessage(HOSTNAME, ERR_UMODEUNKNOWNFLAG, \
-					this->getName() + " MODE " + mode[i], "Unknown MODE flag"));
-				return (mode.erase(0, 1), false);
+					Server::numericMessage(HOSTNAME, ERR_INVALIDMODEPARAM, \
+					src.getNickname() + " " + this->getName() + " +" + mode[i] \
+					+ " " + argument, "invalid argument"));
+				return (mode.erase(i, 1), false);
 			}
 			setLimit(std::strtod(argument.c_str(), NULL));
 			break;
@@ -179,7 +187,7 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 				src.insertOutMessage( \
 					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
 					this->getName() + " MODE " + mode[i], "Not enough parameters"));
-				return (mode.erase(0, 1), false);
+				return (mode.erase(i, 1), false);
 			}
 			else if (!isMember(argument))
 			{
@@ -200,7 +208,7 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 				src.insertOutMessage( \
 					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
 					this->getName() + " MODE " + mode[i], "Not enough parameters"));
-				return (mode.erase(0, 1), false); 
+				return (mode.erase(i, 1), false); 
 			}
 			setKey(argument);
 			break;
@@ -210,7 +218,7 @@ int		Channel::setChannelModes(size_t& i, User& src, std::string& mode)
 			src.insertOutMessage( \
 				Server::numericMessage(HOSTNAME, ERR_UNKNOWNMODE, src.getNickname() \
 				+ " " + mode[i], "is unknown mode char to me"));
-			return (mode.erase(0, 1), false);
+			return (mode.erase(i, 1), false);
 		}
 	}
 	argument.insert(0, "+ ");
@@ -246,7 +254,7 @@ int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode)
 				src.insertOutMessage( \
 					Server::numericMessage(HOSTNAME, ERR_NEEDMOREPARAMS, \
 					this->getName() + " MODE " + mode[i], "Not enough parameters"));
-				return (mode.erase(0, 1), false);
+				return (mode.erase(i, 1), false);
 			}
 			if (!isMember(argument))
 			{
@@ -254,7 +262,7 @@ int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode)
 					Server::numericMessage(HOSTNAME, ERR_USERNOTINCHANNEL, \
 					src.getNickname() + " " + argument + " " + this->_name, \
 					"They aren't on that channel"));
-				return (mode.erase(0, 1), false);
+				return (mode.erase(i, 1), false);
 			}
 			this->_members.at(Server::getSockfd(Server::getIndex(argument))).setOperator(false);
 			break;
@@ -279,7 +287,7 @@ int		Channel::removeChannelModes(size_t& i, User& src, std::string& mode)
 			src.insertOutMessage( \
 				Server::numericMessage(HOSTNAME, ERR_UNKNOWNMODE, src.getNickname() \
 				+ " " + mode[i], "is unknown mode char to me"));
-			return (mode.erase(0, 1), false);
+			return (mode.erase(i, 1), false);
 		}
 	}
 	argument.insert(0, "- ");

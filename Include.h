@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Include.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 16:57:31 by jm                #+#    #+#             */
-/*   Updated: 2024/05/07 19:44:18 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/30 14:57:22 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,9 @@ typedef enum    e_type
 
 /** @brief   "<client> :Cant change mode for other users" */
 # define ERR_USERSDONTMATCH		"502"
+
+/** @brief   "<client> <target chan/user> <mode char> <parameter> :<description>" */
+# define ERR_INVALIDMODEPARAM	"696"
 
 #endif
 /* ************************************************************************** */
