@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ChannelJoinCommand.cpp                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 18:18:18 by jm                #+#    #+#             */
-/*   Updated: 2024/05/10 18:19:12 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:33:02 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,9 @@ int		Channel::isNotMember(const int& sockfd)
 		if (this->_members.at(sockfd).getSock_fd() == sockfd)
 			return (_ignore);
 		else
+		{
 			std::cerr << "Warning!!!: isNotMember() failed" << '\n';
+		}
 	}
 	catch(const std::exception& e)
 	{
@@ -88,7 +90,6 @@ int	Channel::canJoinTheChannel(User* _user, const std::string& username, \
 		return (_error);
 	if (requireKey() && key != this->_key)
 	{
-/*DEBUG*/std::cerr << "ùùùùùùùùù" << std::endl;
 		_user->insertOutMessage(Server::numericMessage(HOSTNAME, \
 			ERR_BADCHANNELKEY, username + " " + this->_name, \
 			"Cannot join channel (+k)"));
@@ -142,15 +143,6 @@ int		Channel::acknowledgementSequence(User* _user, const std::string& username)
 {
 	this->informMembers(username, "JOIN", this->_name);
 	rpl_topic(*_user);
-	// if (topicIsSet())
-	// {
-	// 	_user->insertOutMessage(Server::numericMessage(HOSTNAME, 
-	// 		RPL_TOPIC, username + " " + this->_name, this->_topic));
-	// 	_user->insertOutMessage(Server::numericMessage(HOSTNAME, 
-	// 		RPL_TOPICWHOTIME, username + " " + this->_name + " " 
-	// 		+ this->_topic_author, this->_topic_setat));
-	// 	// return (_ignore);
-	// }
 	for (std::map<int, Channel::Member>::iterator it = this->_members.begin(); \
 		it != this->_members.end(); it++)
 	{

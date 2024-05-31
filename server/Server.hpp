@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:18 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/12 01:56:38 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/30 15:41:59 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ class Server
 		static std::string				_startDate;
 		static std::vector<pollfd>		_sockets;
 		static std::map<int, User>		_users;
-		// std::map<std::string, Channel*> _channels;
 		static bool					initServer(const std::string &port, const std::string &password);
 		static bool					createUser(void);
 		static bool					closeClient(size_t index);

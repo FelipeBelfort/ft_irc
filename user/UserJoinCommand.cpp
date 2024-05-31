@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UserJoinCommand.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 18:02:02 by jm                #+#    #+#             */
-/*   Updated: 2024/05/12 01:31:04 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:42:19 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
  * @param index 
  * @return int 
  */
-int		User::joinCommand(const size_t& index) //TODO recheck carefully the join command with the different cases
+int		User::joinCommand(const size_t& index)
 {
 	int				fdbk;
 	std::string		channels_list;
@@ -79,6 +79,7 @@ int		User::leaveAllChannels(void)
 /*DEBUG*/	std::cerr << "Fatal: leaveAllChannels() failed: " << e.what() << '\n';
 		}
 	}
+	this->_joinedchannels.clear();
 	return (true);
 }
 

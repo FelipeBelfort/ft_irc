@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 21:59:10 by jm                #+#    #+#             */
-/*   Updated: 2024/05/10 17:09:26 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:32:06 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ class Channel
 
 
 		int	joinChannel(const size_t& id, const std::string& key);
-		// void	quitChannel(const User &user);
 
 		bool				isMember(const size_t& index) const;
 		bool				isMember(const int& sockfd) const;
@@ -126,7 +125,6 @@ class Channel
 		std::string					_topic;
 		std::string					_topic_author;
 		std::string					_topic_setat;
-		// std::vector<int>			_operators;
 		bool						_limit_is_set;
 		size_t						_limit;
 		bool						_isPionner_flag;

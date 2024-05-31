@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:14 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/12 14:17:06 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:37:48 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ Server::~Server()
  *  then it calls the signal() to catch 'ctrl+c' and launchs the loop with poll() to listen 
  * the sockets
  *  
- * TODO => error management and the actions inside the for loop
  * 
  * @param port  the access port to the server
  * @param password  password connection the server
@@ -50,9 +49,8 @@ bool	Server::launchServer(const std::string &port, const std::string &password)
 	int			poll_ret;
 
 	poll_ret = -111;
-	if (!initServer(port, password))
+	if (!is_connected || !initServer(port, password))
 		return (false);
-	signal(SIGINT, &exitServer);
 	while (is_connected)
 	{
 		_sockets[0].revents = 0;
@@ -152,25 +150,20 @@ bool	Server::loopOnUsers()
 	{
 		short	revents = getSockrevents(i);
 
-		if (revents & POLLERR) // TODO verify error cases before		Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLERR)
 			std::cout << "client => " << _sockets[i].fd << " POLLERR " << std::endl;
-		if (revents & POLLHUP)										//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLHUP)
 			std::cout << "client => " << _sockets[i].fd << " POLLHUP " << std::endl;
-		if (revents & POLLERR || revents & POLLHUP)					//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLERR || revents & POLLHUP)					
 		{
 			if (!closeClient(i))
 				return (false);
 			continue;
 		}
-		if (revents & POLLIN)										//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLIN)										
 		{
 			memset(buff, 0, BUFF_SIZE);
 			recv_ret = recv(_sockets[i].fd, buff, BUFF_SIZE - 1, MSG_DONTWAIT);
-			// if (recv_ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))		// forbiden
-			// {
-			// 	i++;
-			// 	continue;
-			// }
 			if (recv_ret < 0)
 				return (Libftpp::ft_perror("recv()"));
 			else if (!recv_ret)
@@ -191,9 +184,8 @@ bool	Server::loopOnUsers()
 			}
 			else if (!fdbk)
 				return (false);
-// std::cerr << ":::::::::::: debugging ::::::::::::: " << '\n';
 		}
-		if (revents & POLLOUT)										//	Conditional jump or move depends on uninitialised value(s)
+		if (revents & POLLOUT)										
 		{
 			fdbk = _users.at(_sockets[i].fd).routine(i, "");
 			if (fdbk == _fatal)
@@ -229,10 +221,7 @@ int		Server::atExitProcess(void)
 {
 	for (size_t i = _sockets.size(); i > 0; i = _sockets.size())
 		closeClient(i - 1);
-	// _users.clear();
-	// _sockets.clear();
 	channels.clear();
-/*DEBUG*/std::cout << "users => |" << _users.size() << "| sockets => |" << _sockets.size() << "| channels => |" << channels.size() << "|" << std::endl;
 	return (true);
 }
 

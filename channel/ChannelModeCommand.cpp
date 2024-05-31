@@ -6,7 +6,7 @@
 /*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 18:23:57 by jm                #+#    #+#             */
-/*   Updated: 2024/05/30 15:11:54 by jfaye            ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:34:26 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int		Channel::applyModes(User& src, std::string& mode)
 	}
 	for (size_t i = mode.find_first_not_of("+-"); i < mode.size(); i = mode.find_first_not_of("+-"))
 	{
-		std::cout << "mode => |" << mode << "| char => |" << mode[i] << "|" << std::endl;
+///*DEBUG*/ std::cout << "mode => |" << mode << "| char => |" << mode[i] << "|" << std::endl;
 		if (mode[i - 1] && (mode[i - 1] == '+' || mode[i - 1] == '-'))
 			sign = mode[i - 1];
 		if (mode[i] == ' ' || !sign)

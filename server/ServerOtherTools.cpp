@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerOtherTools.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 17:52:11 by jm                #+#    #+#             */
-/*   Updated: 2024/05/12 14:16:10 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/30 15:44:56 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ bool	Server::isValidNick(const std::string &nick)
 		return (false);
 	fdbk = nick.find_first_of(" ,*?!@.#&$:") == std::string::npos && nick.find_first_of("#&$:") != 0;
 	fdbk &= !std::isdigit(nick[0]);
-	// TODO add rule They MUST NOT start with a character listed as a channel type, channel membership prefix, or prefix listed in the IRCv3 multi-prefix Extension.
 	return (fdbk);
 }
 
@@ -83,7 +82,6 @@ bool	Server::isValidNick(const std::string &nick)
  * @brief 
  * Nicknames must be unique in the server
  * 
- * 	TODO verify if is case insensitive and do the same for the channel
  * @param nick 
  * @return true 
  * @return false 
@@ -117,7 +115,6 @@ bool	Server::broadcasting(void)
 		}
 	}
 	broadcastMsg.clear();
-// std::cout << "**************************broadcasted!" << std::endl;
 	return true;
 }
 

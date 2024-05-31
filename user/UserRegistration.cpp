@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   UserRegistration.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:46:11 by jm                #+#    #+#             */
-/*   Updated: 2024/05/09 22:03:12 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:45:31 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,6 +189,12 @@ int	User::userCommand(const size_t& index)
 		this->_outmsg += Server::numericMessage(HOSTNAME, ERR_ALREADYREGISTERED, \
 			this->_nickname, "You may not reregister");
 		return(_error);
+	}
+	if (this->_password.empty() && !Server::_password.empty())
+	{
+		this->_outmsg += Server::ErrorMessage(\
+			"Registration failure, sequence-> CAP... - PASS... - NICK... - USER...");
+		return(_fatal);
 	}
 	Libftpp::trim(this->_parameters, " \t\n\r");
 	username = Libftpp::extractStr(this->_parameters, " \t", false);

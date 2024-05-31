@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:29 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/12 01:23:51 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/30 15:45:53 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ class User
 		std::string					_realname;
 		std::string					_command;
 		std::string					_parameters;
-		// int							_fd;
 		bool						_registered;
 		std::string					_inmsg;
 		std::string					_outmsg;

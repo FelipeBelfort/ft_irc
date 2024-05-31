@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ServerGettersSetters.cpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 17:06:07 by jm                #+#    #+#             */
-/*   Updated: 2024/05/09 23:29:08 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:38:38 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-int		Server::getIndex(const std::string& nick) // TODO recomplete error backtracking
+int		Server::getIndex(const std::string& nick)
 {
 	User*	_user;
 
@@ -57,9 +57,6 @@ User* 	Server::getUser(const size_t& index)
 		std::map<int, User>::iterator it = _users.find(getSockfd(index));
 		if (it != _users.end())
 			return (&(*it).second);
-// /*DEBUG*/std::cout << "passei aqui |" << _users.at(getSockfd(index)).getNickname() << "|" << std::endl;
-// 		ptr = &_users.at(getSockfd(index));
-// 		return (ptr);
 	}
 	catch(const std::exception& e)
 	{
@@ -118,7 +115,6 @@ const std::string& 	Server::getStartDate()
  */
 size_t		Server::getNbOfUsers(void)
 {
-	// TODO complete
 	return (Server::_users.size());
 }
 

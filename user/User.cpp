@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jm <jm@student.42lyon.fr>                  +#+  +:+       +#+        */
+/*   By: jfaye <jfaye@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 20:26:43 by TheTerror         #+#    #+#             */
-/*   Updated: 2024/05/10 19:28:04 by jm               ###   ########lyon.fr   */
+/*   Updated: 2024/05/31 17:41:06 by jfaye            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ User::User(int sockfd) : _sockfd(sockfd), _registered(false)
 	this->_map["NICK"] = &User::nickCommand;
 	this->_map["USER"] = &User::userCommand;
 	this->_map["QUIT"] = &User::quitCommand;
-	// this->_map["LUSERS"] = &User::lusersCommand;
 	this->_map["PING"] = &User::pingCommand;
 	this->_map["JOIN"] = &User::joinCommand;
 	this->_map["PRIVMSG"] = &User::privmsgCommand;
@@ -55,10 +54,7 @@ int		User::routine(const size_t& index, std::string buff)
 		fdbk = parse(index);
 		if (!fdbk)
 			return (fdbk);
-		//parsing
 	}
-	// else
-	// 	return (true); //TODO review the if/else
 	
 	if (!Server::broadcastMsg.empty())
 		Server::broadcasting();
@@ -154,7 +150,6 @@ int	User::parse(const size_t& index)
 	std::istringstream	istr;
 
 	fdbk = true;
-// /*DEBUG*/ std::cout << "inmsg: '" + this->_inmsg + "'" << std::endl;
 	Libftpp::trimStart(this->_inmsg, " \t\r\n");
 	while (this->_inmsg.find_first_of('\n', 0) != this->_inmsg.npos)
 	{
@@ -183,15 +178,11 @@ int	User::parse(const size_t& index)
 				fdbk = (this->*_map.at(this->_command))(index);
 				if (fdbk == _fatal)
 					return (fdbk);
-					// return (false);
 			}
 			catch(const std::exception& e)
 			{
 /*DEBUG*/		std::cerr << "Unknown COMMAND '" << this->_command << "' :: parse() ->" << e.what() << '\n';
-				// return (true);
 			}
-// std::cerr << "command: " << this->_command << "\n";
-// std::cerr << "parameters: " << this->_parameters << "\n";
 		}
 	}
 	return (fdbk);
